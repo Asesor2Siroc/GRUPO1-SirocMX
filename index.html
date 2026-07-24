@@ -601,29 +601,33 @@
                 </div>
                 <ul class="sidebar-menu">
                     <li class="active" data-view="dashboard" data-perm="dashboard"><a href="#dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
-                    <div class="menu-category-title data-perm-cat" data-perm="clientes">Clientes</div>
-                    <li data-view="clientes" data-perm="clientes"><a href="#clientes"><i class="fa-solid fa-users"></i> Vista 360° Clientes</a></li>
-                    <li data-view="config-procesos" data-perm="config-procesos"><a href="#config-procesos"><i class="fa-solid fa-cogs"></i> Catálogo Procesos</a></li>
-                    <li data-view="asignacion" data-perm="asignacion"><a href="#asignacion"><i class="fa-solid fa-network-wired"></i> Asignación Auto</a></li>
+                    
+                    <div class="menu-category-title data-perm-cat" data-perm="admin-only">Clientes</div>
+                    <li data-view="clientes" data-perm="admin-only"><a href="#clientes"><i class="fa-solid fa-users"></i> Vista 360° Clientes</a></li>
+                    <li data-view="config-procesos" data-perm="admin-only"><a href="#config-procesos"><i class="fa-solid fa-cogs"></i> Catálogo Procesos</a></li>
+                    <li data-view="asignacion" data-perm="admin-only"><a href="#asignacion"><i class="fa-solid fa-network-wired"></i> Asignación Auto</a></li>
+                    
                     <div class="menu-category-title">Actividades</div>
-                    <li data-view="movimientos-afiliatorios" data-perm="movimientos-afiliatorios"><a href="#movimientos-afiliatorios"><i class="fa-solid fa-user-plus"></i> Mov. Afiliatorios</a></li>
-                    <li data-view="pendientes" data-perm="pendientes"><a href="#pendientes"><i class="fa-solid fa-list-check"></i> Pendientes</a></li>
-                    <li data-view="revision" data-perm="revision"><a href="#revision"><i class="fa-solid fa-clipboard-check"></i> Aprobación Contador</a></li>
-                    <li data-view="rezagadas" data-perm="rezagadas"><a href="#rezagadas"><i class="fa-solid fa-triangle-exclamation"></i> Act. Rezagadas</a></li>
-                    <div class="menu-category-title data-perm-cat" data-perm="direccion">Dirección y Equipo</div>
-                    <li data-view="reportes-ejecutivos" data-perm="reportes-ejecutivos"><a href="#reportes-ejecutivos"><i class="fa-solid fa-file-pdf"></i> Reportes Ejecutivos</a></li>
-                    <li data-view="auxiliares" data-perm="auxiliares"><a href="#auxiliares"><i class="fa-solid fa-address-book"></i> Directorio</a></li>
-                    <li data-view="evaluacion" data-perm="evaluacion"><a href="#evaluacion"><i class="fa-solid fa-star-half-stroke"></i> Eval. de Desempeño</a></li>
-                    <div class="menu-category-title data-perm-cat" data-perm="sistema">Sistema</div>
-                    <li data-view="notificaciones" data-perm="notificaciones"><a href="#notificaciones"><i class="fa-solid fa-bell"></i> Notificaciones</a></li>
-                    <li data-view="auditoria" data-perm="auditoria"><a href="#auditoria"><i class="fa-solid fa-clock-rotate-left"></i> Auditoría</a></li>
-                    <li data-view="usuarios" data-perm="usuarios"><a href="#usuarios"><i class="fa-solid fa-user-shield"></i> Permisos</a></li>
-                    <li data-view="versiones" data-perm="versiones"><a href="#versiones"><i class="fa-solid fa-code-branch"></i> Respaldos</a></li>
+                    <li data-view="movimientos-afiliatorios" data-perm="operativo"><a href="#movimientos-afiliatorios"><i class="fa-solid fa-user-plus"></i> Mov. Afiliatorios</a></li>
+                    <li data-view="pendientes" data-perm="operativo"><a href="#pendientes"><i class="fa-solid fa-list-check"></i> Pendientes</a></li>
+                    <li data-view="revision" data-perm="admin-only"><a href="#revision"><i class="fa-solid fa-clipboard-check"></i> Aprobación Contador</a></li>
+                    <li data-view="rezagadas" data-perm="operativo"><a href="#rezagadas"><i class="fa-solid fa-triangle-exclamation"></i> Act. Rezagadas</a></li>
+                    
+                    <div class="menu-category-title data-perm-cat" data-perm="admin-only">Dirección y Equipo</div>
+                    <li data-view="reportes-ejecutivos" data-perm="admin-only"><a href="#reportes-ejecutivos"><i class="fa-solid fa-file-pdf"></i> Reportes Ejecutivos</a></li>
+                    <li data-view="auxiliares" data-perm="operativo"><a href="#auxiliares"><i class="fa-solid fa-address-book"></i> Directorio</a></li>
+                    <li data-view="evaluacion" data-perm="admin-only"><a href="#evaluacion"><i class="fa-solid fa-star-half-stroke"></i> Eval. de Desempeño</a></li>
+                    
+                    <div class="menu-category-title data-perm-cat" data-perm="admin-only">Sistema</div>
+                    <li data-view="notificaciones" data-perm="operativo"><a href="#notificaciones"><i class="fa-solid fa-bell"></i> Notificaciones</a></li>
+                    <li data-view="auditoria" data-perm="admin-only"><a href="#auditoria"><i class="fa-solid fa-clock-rotate-left"></i> Auditoría</a></li>
+                    <li data-view="usuarios" data-perm="admin-only"><a href="#usuarios"><i class="fa-solid fa-user-shield"></i> Permisos</a></li>
+                    <li data-view="versiones" data-perm="admin-only"><a href="#versiones"><i class="fa-solid fa-code-branch"></i> Respaldos</a></li>
                 </ul>
             </div>
             <div class="sidebar-footer">
                 <span id="current-user-role-label">Admin SIROC</span>
-                <i class="fa-solid fa-cloud" style="color:var(--verde);" title="Sincronizado con Firebase"></i>
+                <i class="fa-solid fa-cloud" id="cloud-status-icon" style="color:var(--verde);" title="Sincronizado con Firebase"></i>
             </div>
         </div>
 
@@ -693,7 +697,7 @@
                 <div class="view-header">
                     <div class="view-title">
                         <h2>Vista 360° Clientes</h2>
-                        <p>Catálogo centralizado en Firebase con edición instantánea para todos</p>
+                        <p>Catálogo centralizado en Firebase con edición instantánea</p>
                     </div>
                     <button class="btn btn-primary" onclick="openModalCliente()"><i class="fa-solid fa-plus"></i> Nuevo Cliente</button>
                 </div>
@@ -713,7 +717,6 @@
                 </div>
             </div>
 
-            <!-- OTRAMS VISTAS MANTENIDAS EXACTAMENTE IGUAL -->
             <div id="view-config-procesos" class="view-content">
                 <div class="view-header">
                     <div class="view-title"><h2>Catálogo de Procesos</h2></div>
@@ -747,7 +750,7 @@
                 </div>
             </div>
 
-            <!-- SECCIONES RESTANTES HABILITADAS PARA NAVEGACIÓN -->
+            <!-- SECCIONES RESTANTES -->
             <div id="view-asignacion" class="view-content"><div class="view-header"><h2>Asignación Automática</h2></div><div class="matrix-grid" id="matrix-asignaciones-container"></div></div>
             <div id="view-movimientos-afiliatorios" class="view-content"><div class="view-header"><h2>Movimientos Afiliatorios</h2></div><div class="data-table-container"><table class="custom-table"><thead><tr><th>Cliente</th><th>Tipo</th><th>Estatus</th></tr></thead><tbody id="body-movimientos-afiliatorios"></tbody></table></div></div>
             <div id="view-revision" class="view-content"><div class="view-header"><h2>Aprobación Contador</h2></div><div class="data-table-container"><table class="custom-table"><thead><tr><th>Cliente</th><th>Responsable</th></tr></thead><tbody id="body-revision"></tbody></table></div></div>
@@ -820,52 +823,39 @@
             usuarios: []
         };
 
-        let chartDashboardStatusInstance = null;
-        let chartDashboardCumplimientoInstance = null;
         let currentUser = { nombre: "Contador encargado", rol: "Administrador" };
 
-        // INICIALIZACIÓN DE ESCUCHADORES EN TIEMPO REAL CON FIREBASE
-        function initRealtimeFirebaseListeners() {
-            // Escuchar colección 'clientes'
-            db.collection("clientes").onSnapshot(snapshot => {
-                appState.clientes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderClientesTable();
-            });
+        // INICIALIZACIÓN Y CONFIGURACIÓN DE NAVEGACIÓN
+        document.addEventListener("DOMContentLoaded", () => {
+            setupNavigationListeners();
+        });
 
-            // Escuchar colección 'procesosConfig'
-            db.collection("procesosConfig").onSnapshot(snapshot => {
-                appState.procesosConfig = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderConfigProcesosTable();
+        function setupNavigationListeners() {
+            const menuItems = document.querySelectorAll(".sidebar-menu li[data-view]");
+            menuItems.forEach(item => {
+                item.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    menuItems.forEach(li => li.classList.remove("active"));
+                    item.classList.add("active");
+                    const viewId = item.getAttribute("data-view");
+                    switchView(viewId);
+                });
             });
-
-            // Escuchar colección 'tasks'
-            db.collection("tasks").onSnapshot(snapshot => {
-                appState.tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderTasksTable();
-                renderDashboard();
-            });
-
-            // Cargar datos iniciales por defecto a Firebase si está vacío
-            seedInitialFirebaseData();
         }
 
-        async function seedInitialFirebaseData() {
-            const clientCheck = await db.collection("clientes").get();
-            if (clientCheck.empty) {
-                await db.collection("clientes").doc("c1").set({
-                    nombre: "Constructora e Inmobiliaria ABC",
-                    rfc: "ABC010101XYZ",
-                    tipo: "A",
-                    estatus: "Activo",
-                    puntosAcumulados: 120
-                });
-                await db.collection("clientes").doc("c2").set({
-                    nombre: "Servicios Logísticos del Norte",
-                    rfc: "SLN050505AB1",
-                    tipo: "B",
-                    estatus: "Activo",
-                    puntosAcumulados: 85
-                });
+        // CONTROL DE PERMISOS SEGÚN EL ROL DEL USUARIO
+        function applyRolePermissions() {
+            const isAdmin = currentUser.rol === "Administrador";
+            
+            // Ocultar/Mostrar elementos del menú marcados como 'admin-only'
+            document.querySelectorAll('[data-perm="admin-only"]').forEach(el => {
+                el.style.display = isAdmin ? "" : "none";
+            });
+
+            // Si es un Auxiliar y la vista actual es restringida, redirigir al Dashboard
+            const activeView = document.querySelector(".view-content.active");
+            if (!isAdmin && activeView && activeView.id === "view-clientes") {
+                switchView("dashboard");
             }
         }
 
@@ -880,11 +870,16 @@
                 currentUser = { nombre: "Auxiliar 1", rol: "Auxiliar" };
             } else if (uInput === "Auxiliar 2" && pInput === "aux2") {
                 currentUser = { nombre: "Auxiliar 2", rol: "Auxiliar" };
+            } else {
+                showToast("Usuario o contraseña incorrectos.");
+                return;
             }
 
             document.getElementById("header-rol-name").innerText = currentUser.rol;
             document.getElementById("header-avatar").innerText = currentUser.nombre.substring(0,2).toUpperCase();
             document.getElementById("current-user-role-label").innerText = currentUser.nombre + " (" + currentUser.rol + ")";
+
+            applyRolePermissions();
 
             document.getElementById("login-screen").style.display = "none";
             document.getElementById("app-container").style.display = "flex";
@@ -901,7 +896,18 @@
         function switchView(viewId) {
             document.querySelectorAll(".view-content").forEach(v => v.classList.remove("active"));
             const target = document.getElementById("view-" + viewId);
-            if (target) target.classList.add("active");
+            if (target) {
+                target.classList.add("active");
+            }
+            
+            // Actualizar menú activo en sidebar
+            document.querySelectorAll(".sidebar-menu li").forEach(li => {
+                if (li.getAttribute("data-view") === viewId) {
+                    li.classList.add("active");
+                } else {
+                    li.classList.remove("active");
+                }
+            });
         }
 
         function toggleDarkMode() {
@@ -920,6 +926,62 @@
             setTimeout(() => toast.classList.remove("show"), 3000);
         }
 
+        // INICIALIZACIÓN DE ESCUCHADORES EN TIEMPO REAL CON FIREBASE
+        function initRealtimeFirebaseListeners() {
+            const cloudIcon = document.getElementById("cloud-status-icon");
+
+            // Escuchar colección 'clientes'
+            db.collection("clientes").onSnapshot(snapshot => {
+                appState.clientes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderClientesTable();
+                if (cloudIcon) cloudIcon.style.color = "var(--verde)";
+            }, err => {
+                console.error("Error al escuchar clientes de Firebase:", err);
+                if (cloudIcon) cloudIcon.style.color = "var(--rojo)";
+                showToast("Error de permisos o conexión en Firebase.");
+            });
+
+            // Escuchar colección 'procesosConfig'
+            db.collection("procesosConfig").onSnapshot(snapshot => {
+                appState.procesosConfig = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderConfigProcesosTable();
+            }, err => console.error("Error en procesosConfig:", err));
+
+            // Escuchar colección 'tasks'
+            db.collection("tasks").onSnapshot(snapshot => {
+                appState.tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderTasksTable();
+                renderDashboard();
+            }, err => console.error("Error en tasks:", err));
+
+            // Cargar datos iniciales por defecto a Firebase si está vacío
+            seedInitialFirebaseData();
+        }
+
+        async function seedInitialFirebaseData() {
+            try {
+                const clientCheck = await db.collection("clientes").get();
+                if (clientCheck.empty) {
+                    await db.collection("clientes").doc("c1").set({
+                        nombre: "Constructora e Inmobiliaria ABC",
+                        rfc: "ABC010101XYZ",
+                        tipo: "A",
+                        estatus: "Activo",
+                        puntosAcumulados: 120
+                    });
+                    await db.collection("clientes").doc("c2").set({
+                        nombre: "Servicios Logísticos del Norte",
+                        rfc: "SLN050505AB1",
+                        tipo: "B",
+                        estatus: "Activo",
+                        puntosAcumulados: 85
+                    });
+                }
+            } catch(e) {
+                console.warn("Sembrado inicial de datos pospuesto por permisos:", e);
+            }
+        }
+
         /* CRUD CLIENTES CON FIREBASE */
         function renderClientesTable() {
             let html = "";
@@ -935,7 +997,8 @@
                     </td>
                 </tr>`;
             });
-            document.getElementById("body-clientes").innerHTML = html || `<tr><td colspan="5">No hay clientes en Firebase.</td></tr>`;
+            const body = document.getElementById("body-clientes");
+            if (body) body.innerHTML = html || `<tr><td colspan="5">No hay clientes en Firebase.</td></tr>`;
         }
 
         function openModalCliente() {
@@ -951,8 +1014,8 @@
             document.getElementById("form-cliente-id").value = c.id;
             document.getElementById("form-cliente-nombre").value = c.nombre;
             document.getElementById("form-cliente-rfc").value = c.rfc;
-            document.getElementById("form-cliente-tipo").value = c.tipo;
-            document.getElementById("form-cliente-estatus").value = c.estatus;
+            document.getElementById("form-cliente-tipo").value = c.tipo || "A";
+            document.getElementById("form-cliente-estatus").value = c.estatus || "Activo";
             document.getElementById("modal-cliente").classList.add("active");
         }
 
@@ -965,20 +1028,29 @@
 
             if (!nombre || !rfc) { showToast("Complete Nombre y RFC."); return; }
 
-            // Guardar o Actualizar directamente en Firestore
-            await db.collection("clientes").doc(id).set({
-                nombre, rfc, tipo, estatus,
-                puntosAcumulados: 100
-            }, { merge: true });
+            try {
+                await db.collection("clientes").doc(id).set({
+                    nombre, rfc, tipo, estatus,
+                    puntosAcumulados: 100
+                }, { merge: true });
 
-            closeModal("modal-cliente");
-            showToast("Cliente guardado en Firebase en tiempo real.");
+                closeModal("modal-cliente");
+                showToast("Cliente guardado en Firebase en tiempo real.");
+            } catch(e) {
+                console.error("Error al guardar en Firebase:", e);
+                showToast("Error al guardar. Verifique las reglas de Firebase Firestore.");
+            }
         }
 
         async function deleteCliente(id) {
             if (confirm("¿Eliminar cliente de la nube?")) {
-                await db.collection("clientes").doc(id).delete();
-                showToast("Cliente eliminado de Firebase.");
+                try {
+                    await db.collection("clientes").doc(id).delete();
+                    showToast("Cliente eliminado de Firebase.");
+                } catch(e) {
+                    console.error("Error al eliminar cliente:", e);
+                    showToast("Error al eliminar de Firebase.");
+                }
             }
         }
 
@@ -1002,15 +1074,17 @@
         }
 
         function renderDashboard() {
-            document.getElementById("kpi-d-pendientes").innerText = appState.tasks.length;
-            document.getElementById("kpi-d-terminados").innerText = appState.tasks.filter(t => t.estado === 'Terminado').length;
+            const pendingEl = document.getElementById("kpi-d-pendientes");
+            const termEl = document.getElementById("kpi-d-terminados");
+            if (pendingEl) pendingEl.innerText = appState.tasks.length;
+            if (termEl) termEl.innerText = appState.tasks.filter(t => t.estado === 'Terminado').length;
         }
 
         function descargarVersionHTML() {
             const element = document.createElement("a");
             const file = new Blob([document.documentElement.outerHTML], {type: 'text/html'});
             element.href = URL.createObjectURL(file);
-            element.download = "SIROC_MX_Firebase.html";
+            element.download = "index.html";
             document.body.appendChild(element);
             element.click();
             document.body.removeChild(element);

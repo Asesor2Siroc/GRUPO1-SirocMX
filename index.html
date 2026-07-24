@@ -20,10 +20,15 @@
             measurementId: "G-GKRQMJMCRH"
         };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+        let db = null;
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.firestore();
+        } catch (e) {
+            console.error("Error al inicializar Firebase:", e);
         }
-        const db = firebase.firestore();
     </script>
 
     <!-- Chart.js para analítica -->
@@ -354,13 +359,6 @@
             margin-top: 3px;
         }
 
-        .view-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -467,7 +465,6 @@
 
         .badge-a { background-color: rgba(48, 102, 190, 0.15); color: var(--azul-accent); }
         .status-active { background-color: rgba(16, 185, 129, 0.1); color: var(--verde); }
-        .priority-high { background-color: rgba(239, 68, 68, 0.15); color: var(--rojo); }
 
         .btn {
             padding: 7px 14px;
@@ -536,9 +533,6 @@
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-        .matrix-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 18px; }
-        .matrix-card { background-color: var(--blanco); border-radius: var(--radio); border: 1px solid var(--gris-borde); padding: 18px; }
-
         .toast-notification {
             position: fixed;
             bottom: 24px; right: 24px;
@@ -600,7 +594,7 @@
                     </div>
                 </div>
                 <ul class="sidebar-menu">
-                    <li class="active" data-view="dashboard" data-perm="dashboard"><a href="#dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                    <li class="active" data-view="dashboard" data-perm="operativo"><a href="#dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
                     
                     <div class="menu-category-title data-perm-cat" data-perm="admin-only">Clientes</div>
                     <li data-view="clientes" data-perm="admin-only"><a href="#clientes"><i class="fa-solid fa-users"></i> Vista 360° Clientes</a></li>
@@ -627,7 +621,7 @@
             </div>
             <div class="sidebar-footer">
                 <span id="current-user-role-label">Admin SIROC</span>
-                <i class="fa-solid fa-cloud" id="cloud-status-icon" style="color:var(--verde);" title="Sincronizado con Firebase"></i>
+                <i class="fa-solid fa-cloud" id="cloud-status-icon" style="color:var(--verde);" title="Estado de Firebase"></i>
             </div>
         </div>
 
@@ -807,6 +801,61 @@
         </div>
     </div>
 
+    <!-- MODAL GENERICO/PROCESOS -->
+    <div class="modal" id="modal-proceso">
+        <div class="modal-content" style="width: 500px;">
+            <div class="modal-header">
+                <h3>Nuevo Proceso</h3>
+                <button class="btn-theme" onclick="closeModal('modal-proceso')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nombre del Proceso</label>
+                    <input type="text" id="form-proceso-nombre" placeholder="Ej. Declaración Anual">
+                </div>
+                <div class="form-group">
+                    <label>Frecuencia</label>
+                    <select id="form-proceso-frecuencia">
+                        <option value="Mensual">Mensual</option>
+                        <option value="Bimestral">Bimestral</option>
+                        <option value="Anual">Anual</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-proceso')">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveProcesoForm()">Guardar Proceso</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PENDIENTES -->
+    <div class="modal" id="modal-pendiente">
+        <div class="modal-content" style="width: 500px;">
+            <div class="modal-header">
+                <h3>Nueva Actividad</h3>
+                <button class="btn-theme" onclick="closeModal('modal-pendiente')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Descripción de la Tarea</label>
+                    <input type="text" id="form-tarea-desc" placeholder="Ej. Revisión de pagos SIROC">
+                </div>
+                <div class="form-group">
+                    <label>Responsable</label>
+                    <select id="form-tarea-resp">
+                        <option value="Auxiliar 1">Auxiliar 1</option>
+                        <option value="Auxiliar 2">Auxiliar 2</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-pendiente')">Cancelar</button>
+                <button class="btn btn-primary" onclick="savePendienteForm()">Guardar Actividad</button>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST DE NOTIFICACIÓN -->
     <div id="toast-container" class="toast-notification">
         <i class="fa-solid fa-circle-check" style="font-size: 18px; color: var(--verde);"></i>
@@ -814,20 +863,29 @@
     </div>
 
     <script>
-        // ESTADO GLOBAL LOCAL (SINCRONIZADO EN TIEMPO REAL DESDE FIREBASE)
+        // ESTADO GLOBAL LOCAL
         const appState = {
-            clientes: [],
-            procesosConfig: [],
-            tasks: [],
-            auxiliares: [],
-            usuarios: []
+            clientes: [
+                { id: "c1", nombre: "Constructora e Inmobiliaria ABC", rfc: "ABC010101XYZ", tipo: "A", estatus: "Activo", puntosAcumulados: 120 },
+                { id: "c2", nombre: "Servicios Logísticos del Norte", rfc: "SLN050505AB1", tipo: "B", estatus: "Activo", puntosAcumulados: 85 }
+            ],
+            procesosConfig: [
+                { id: "p1", nombre: "Registro de Obras SIROC", frecuencia: "Mensual" }
+            ],
+            tasks: [
+                { id: "t1", descripcion: "Carga de nómina IMSS", responsable: "Auxiliar 1", estado: "Pendiente" }
+            ]
         };
 
         let currentUser = { nombre: "Contador encargado", rol: "Administrador" };
 
-        // INICIALIZACIÓN Y CONFIGURACIÓN DE NAVEGACIÓN
+        // CONFIGURACIÓN DE EVENTOS DE NAVEGACIÓN
         document.addEventListener("DOMContentLoaded", () => {
             setupNavigationListeners();
+            renderClientesTable();
+            renderConfigProcesosTable();
+            renderTasksTable();
+            renderDashboard();
         });
 
         function setupNavigationListeners() {
@@ -843,23 +901,19 @@
             });
         }
 
-        // CONTROL DE PERMISOS SEGÚN EL ROL DEL USUARIO
         function applyRolePermissions() {
             const isAdmin = currentUser.rol === "Administrador";
             
-            // Ocultar/Mostrar elementos del menú marcados como 'admin-only'
             document.querySelectorAll('[data-perm="admin-only"]').forEach(el => {
                 el.style.display = isAdmin ? "" : "none";
             });
 
-            // Si es un Auxiliar y la vista actual es restringida, redirigir al Dashboard
             const activeView = document.querySelector(".view-content.active");
             if (!isAdmin && activeView && activeView.id === "view-clientes") {
                 switchView("dashboard");
             }
         }
 
-        // CONTROL DE SESIÓN
         async function handleLogin() {
             const uInput = document.getElementById("login-user").value.trim();
             const pInput = document.getElementById("login-pass").value.trim();
@@ -884,8 +938,9 @@
             document.getElementById("login-screen").style.display = "none";
             document.getElementById("app-container").style.display = "flex";
 
-            // Iniciar sincronización en tiempo real
-            initRealtimeFirebaseListeners();
+            if (db) {
+                initRealtimeFirebaseListeners();
+            }
         }
 
         function logout() {
@@ -900,7 +955,6 @@
                 target.classList.add("active");
             }
             
-            // Actualizar menú activo en sidebar
             document.querySelectorAll(".sidebar-menu li").forEach(li => {
                 if (li.getAttribute("data-view") === viewId) {
                     li.classList.add("active");
@@ -926,70 +980,49 @@
             setTimeout(() => toast.classList.remove("show"), 3000);
         }
 
-        // INICIALIZACIÓN DE ESCUCHADORES EN TIEMPO REAL CON FIREBASE
+        // FIREBASE EN TIEMPO REAL
         function initRealtimeFirebaseListeners() {
             const cloudIcon = document.getElementById("cloud-status-icon");
 
-            // Escuchar colección 'clientes'
-            db.collection("clientes").onSnapshot(snapshot => {
-                appState.clientes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderClientesTable();
-                if (cloudIcon) cloudIcon.style.color = "var(--verde)";
-            }, err => {
-                console.error("Error al escuchar clientes de Firebase:", err);
-                if (cloudIcon) cloudIcon.style.color = "var(--rojo)";
-                showToast("Error de permisos o conexión en Firebase.");
-            });
-
-            // Escuchar colección 'procesosConfig'
-            db.collection("procesosConfig").onSnapshot(snapshot => {
-                appState.procesosConfig = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderConfigProcesosTable();
-            }, err => console.error("Error en procesosConfig:", err));
-
-            // Escuchar colección 'tasks'
-            db.collection("tasks").onSnapshot(snapshot => {
-                appState.tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderTasksTable();
-                renderDashboard();
-            }, err => console.error("Error en tasks:", err));
-
-            // Cargar datos iniciales por defecto a Firebase si está vacío
-            seedInitialFirebaseData();
-        }
-
-        async function seedInitialFirebaseData() {
             try {
-                const clientCheck = await db.collection("clientes").get();
-                if (clientCheck.empty) {
-                    await db.collection("clientes").doc("c1").set({
-                        nombre: "Constructora e Inmobiliaria ABC",
-                        rfc: "ABC010101XYZ",
-                        tipo: "A",
-                        estatus: "Activo",
-                        puntosAcumulados: 120
-                    });
-                    await db.collection("clientes").doc("c2").set({
-                        nombre: "Servicios Logísticos del Norte",
-                        rfc: "SLN050505AB1",
-                        tipo: "B",
-                        estatus: "Activo",
-                        puntosAcumulados: 85
-                    });
-                }
-            } catch(e) {
-                console.warn("Sembrado inicial de datos pospuesto por permisos:", e);
+                db.collection("clientes").onSnapshot(snapshot => {
+                    if (!snapshot.empty) {
+                        appState.clientes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderClientesTable();
+                    }
+                    if (cloudIcon) cloudIcon.style.color = "var(--verde)";
+                }, err => {
+                    console.warn("Sin acceso en tiempo real a Firebase Clientes:", err);
+                    if (cloudIcon) cloudIcon.style.color = "var(--rojo)";
+                });
+
+                db.collection("procesosConfig").onSnapshot(snapshot => {
+                    if (!snapshot.empty) {
+                        appState.procesosConfig = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderConfigProcesosTable();
+                    }
+                }, err => console.warn("Error en procesosConfig:", err));
+
+                db.collection("tasks").onSnapshot(snapshot => {
+                    if (!snapshot.empty) {
+                        appState.tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderTasksTable();
+                        renderDashboard();
+                    }
+                }, err => console.warn("Error en tasks:", err));
+            } catch (e) {
+                console.error("Falló la conexión en tiempo real:", e);
             }
         }
 
-        /* CRUD CLIENTES CON FIREBASE */
+        /* CLIENTES */
         function renderClientesTable() {
             let html = "";
             appState.clientes.forEach(c => {
                 html += `<tr>
                     <td><strong>${c.nombre}</strong></td>
                     <td><code>${c.rfc}</code></td>
-                    <td><span class="badge badge-a">Tipo ${c.tipo}</span> <span class="badge status-active">${c.estatus}</span></td>
+                    <td><span class="badge badge-a">Tipo ${c.tipo || 'A'}</span> <span class="badge status-active">${c.estatus || 'Activo'}</span></td>
                     <td><span class="badge" style="background-color:rgba(16,185,129,0.15); color:var(--verde); font-weight:700;">${c.puntosAcumulados || 0} Pts</span></td>
                     <td>
                         <button class="btn btn-secondary" onclick="editCliente('${c.id}')"><i class="fa-solid fa-pen"></i></button>
@@ -998,7 +1031,7 @@
                 </tr>`;
             });
             const body = document.getElementById("body-clientes");
-            if (body) body.innerHTML = html || `<tr><td colspan="5">No hay clientes en Firebase.</td></tr>`;
+            if (body) body.innerHTML = html || `<tr><td colspan="5">No hay clientes registrados.</td></tr>`;
         }
 
         function openModalCliente() {
@@ -1028,49 +1061,113 @@
 
             if (!nombre || !rfc) { showToast("Complete Nombre y RFC."); return; }
 
-            try {
-                await db.collection("clientes").doc(id).set({
-                    nombre, rfc, tipo, estatus,
-                    puntosAcumulados: 100
-                }, { merge: true });
+            const clienteData = { id, nombre, rfc, tipo, estatus, puntosAcumulados: 100 };
 
-                closeModal("modal-cliente");
-                showToast("Cliente guardado en Firebase en tiempo real.");
-            } catch(e) {
-                console.error("Error al guardar en Firebase:", e);
-                showToast("Error al guardar. Verifique las reglas de Firebase Firestore.");
+            const idx = appState.clientes.findIndex(c => c.id === id);
+            if (idx >= 0) {
+                appState.clientes[idx] = clienteData;
+            } else {
+                appState.clientes.push(clienteData);
             }
+            renderClientesTable();
+
+            if (db) {
+                try {
+                    await db.collection("clientes").doc(id).set(clienteData, { merge: true });
+                } catch(e) {
+                    console.warn("No se pudo guardar en la nube de Firebase, guardado localmente:", e);
+                }
+            }
+
+            closeModal("modal-cliente");
+            showToast("Cliente guardado correctamente.");
         }
 
         async function deleteCliente(id) {
-            if (confirm("¿Eliminar cliente de la nube?")) {
-                try {
-                    await db.collection("clientes").doc(id).delete();
-                    showToast("Cliente eliminado de Firebase.");
-                } catch(e) {
-                    console.error("Error al eliminar cliente:", e);
-                    showToast("Error al eliminar de Firebase.");
+            if (confirm("¿Eliminar cliente?")) {
+                appState.clientes = appState.clientes.filter(c => c.id !== id);
+                renderClientesTable();
+                if (db) {
+                    try { await db.collection("clientes").doc(id).delete(); } catch(e){}
                 }
+                showToast("Cliente eliminado.");
             }
         }
 
-        /* RENDERS ADICIONALES Y DASHBOARD */
+        /* PROCESOS */
+        function openModalProcesoConfig() {
+            document.getElementById("form-proceso-nombre").value = "";
+            document.getElementById("modal-proceso").classList.add("active");
+        }
+
+        async function saveProcesoForm() {
+            const nombre = document.getElementById("form-proceso-nombre").value;
+            const frecuencia = document.getElementById("form-proceso-frecuencia").value;
+            if (!nombre) return;
+
+            const newP = { id: "p_" + Date.now(), nombre, frecuencia };
+            appState.procesosConfig.push(newP);
+            renderConfigProcesosTable();
+
+            if (db) {
+                try { await db.collection("procesosConfig").doc(newP.id).set(newP); } catch(e){}
+            }
+            closeModal("modal-proceso");
+            showToast("Proceso guardado.");
+        }
+
         function renderConfigProcesosTable() {
             let html = "";
             appState.procesosConfig.forEach(p => {
-                html += `<tr><td><strong>${p.nombre || 'Proceso'}</strong></td><td>${p.frecuencia || 'Mensual'}</td><td><button class="btn btn-danger" onclick="db.collection('procesosConfig').doc('${p.id}').delete()"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+                html += `<tr><td><strong>${p.nombre || 'Proceso'}</strong></td><td>${p.frecuencia || 'Mensual'}</td><td><button class="btn btn-danger" onclick="deleteProceso('${p.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`;
             });
             const body = document.getElementById("body-config-procesos");
             if (body) body.innerHTML = html || `<tr><td colspan="3">Sin procesos registrados.</td></tr>`;
         }
 
+        function deleteProceso(id) {
+            appState.procesosConfig = appState.procesosConfig.filter(p => p.id !== id);
+            renderConfigProcesosTable();
+            if (db) { try { db.collection("procesosConfig").doc(id).delete(); } catch(e){} }
+        }
+
+        /* PENDIENTES */
+        function openModalPendiente() {
+            document.getElementById("form-tarea-desc").value = "";
+            document.getElementById("modal-pendiente").classList.add("active");
+        }
+
+        async function savePendienteForm() {
+            const desc = document.getElementById("form-tarea-desc").value;
+            const resp = document.getElementById("form-tarea-resp").value;
+            if (!desc) return;
+
+            const newT = { id: "t_" + Date.now(), descripcion: desc, responsable: resp, estado: "Pendiente" };
+            appState.tasks.push(newT);
+            renderTasksTable();
+            renderDashboard();
+
+            if (db) {
+                try { await db.collection("tasks").doc(newT.id).set(newT); } catch(e){}
+            }
+            closeModal("modal-pendiente");
+            showToast("Actividad guardada.");
+        }
+
         function renderTasksTable() {
             let html = "";
             appState.tasks.forEach(t => {
-                html += `<tr><td>${t.descripcion || 'Tarea'}</td><td>${t.responsable || 'Auxiliar'}</td><td>${t.estado || 'Pendiente'}</td><td><button class="btn btn-danger" onclick="db.collection('tasks').doc('${t.id}').delete()"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+                html += `<tr><td>${t.descripcion || 'Tarea'}</td><td>${t.responsable || 'Auxiliar'}</td><td><span class="badge status-active">${t.estado || 'Pendiente'}</span></td><td><button class="btn btn-danger" onclick="deleteTask('${t.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`;
             });
             const body = document.getElementById("body-pendientes");
             if (body) body.innerHTML = html || `<tr><td colspan="4">Sin actividades registradas.</td></tr>`;
+        }
+
+        function deleteTask(id) {
+            appState.tasks = appState.tasks.filter(t => t.id !== id);
+            renderTasksTable();
+            renderDashboard();
+            if (db) { try { db.collection("tasks").doc(id).delete(); } catch(e){} }
         }
 
         function renderDashboard() {

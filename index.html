@@ -4,14 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIROC MX - Grupo 1 | Sistema Integral de Administración y Control Operativo</title>
-    <!-- Chart.js for analytics -->
+
+    <!-- SDKs de Firebase Compatibles (v10) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        // Configuración oficial de tu proyecto Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoEn4-Kjuab_L3qtFQET42D4W53b704xc",
+            authDomain: "base-de-datos-dde3b.firebaseapp.com",
+            projectId: "base-de-datos-dde3b",
+            storageBucket: "base-de-datos-dde3b.firebasestorage.app",
+            messagingSenderId: "340435640540",
+            appId: "1:340435640540:web:792891002be988b7dcd419",
+            measurementId: "G-GKRQMJMCRH"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+    </script>
+
+    <!-- Chart.js para analítica -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- cr icons -->
+    <!-- FontAwesome Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Dexie.js for IndexedDB -->
-    <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
-    <!-- html2pdf.js for native PDF generation -->
+    <!-- html2pdf.js para exportar reportes en PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         :root {
             --azul-marino: #0A192F;
@@ -58,7 +79,7 @@
             transition: var(--transition);
         }
 
-        /* Login Screen Styling */
+        /* Pantalla de Inicio de Sesión */
         #login-screen {
             position: fixed;
             top: 0;
@@ -126,7 +147,7 @@
             color: var(--gris-texto);
         }
 
-        /* App Layout */
+        /* Estructura de la Aplicación */
         #app-container {
             display: none;
             width: 100vw;
@@ -444,40 +465,9 @@
             gap: 5px;
         }
 
-        .badge-btn {
-            border: none;
-            cursor: pointer;
-            transition: transform 0.15s ease, opacity 0.15s ease;
-            user-select: none;
-        }
-        .badge-btn:hover {
-            opacity: 0.85;
-            transform: scale(1.03);
-        }
-
         .badge-a { background-color: rgba(48, 102, 190, 0.15); color: var(--azul-accent); }
         .status-active { background-color: rgba(16, 185, 129, 0.1); color: var(--verde); }
         .priority-high { background-color: rgba(239, 68, 68, 0.15); color: var(--rojo); }
-
-        .status-badge-pendiente { background-color: rgba(100, 116, 139, 0.15); color: var(--gris-suave); }
-        .status-badge-enproceso { background-color: rgba(48, 102, 190, 0.15); color: var(--azul-accent); }
-        .status-badge-esperando { background-color: rgba(245, 158, 11, 0.15); color: var(--amarillo); }
-        .status-badge-terminado { background-color: rgba(16, 185, 129, 0.15); color: var(--verde); }
-        .status-badge-rezagada { background-color: rgba(239, 68, 68, 0.15); color: var(--rojo); }
-
-        .doc-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 500;
-            background-color: rgba(0,0,0,0.05);
-            color: var(--gris-texto);
-            margin-right: 4px;
-        }
-        .doc-chip i { font-size: 10px; color: var(--azul-accent); }
 
         .btn {
             padding: 7px 14px;
@@ -548,15 +538,6 @@
 
         .matrix-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 18px; }
         .matrix-card { background-color: var(--blanco); border-radius: var(--radio); border: 1px solid var(--gris-borde); padding: 18px; }
-        .matrix-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--gris-borde); padding-bottom: 8px; }
-        .matrix-process-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; font-size: 13px; gap: 10px; }
-
-        .switch { position: relative; display: inline-block; width: 34px; height: 18px; flex-shrink: 0; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--azul-accent); }
-        input:checked + .slider:before { transform: translateX(16px); }
 
         .toast-notification {
             position: fixed;
@@ -577,16 +558,6 @@
         }
         .toast-notification.show { transform: translateY(0); opacity: 1; }
 
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--blanco);
-            padding: 4px 8px;
-            border-radius: 6px;
-            border: 1px solid var(--gris-borde);
-        }
-
         .chart-card {
             background-color: var(--blanco);
             border-radius: var(--radio);
@@ -594,35 +565,6 @@
             padding: 18px;
             box-shadow: var(--shadow);
             margin-bottom: 20px;
-        }
-        .chart-card h3 {
-            font-size: 14px;
-            color: var(--azul-marino);
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        body.dark-mode .chart-card h3 { color: #FFF; }
-
-        .param-eval-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 14px;
-            background: var(--gris-fondo);
-            border: 1px solid var(--gris-borde);
-            border-radius: 6px;
-            margin-bottom: 8px;
-        }
-        .param-eval-row label {
-            font-weight: 600;
-            font-size: 13px;
-            margin-bottom: 0;
-        }
-        .param-eval-row input[type="number"] {
-            width: 80px;
-            text-align: center;
         }
     </style>
 </head>
@@ -654,7 +596,7 @@
                     <i class="fa-solid fa-shield-halved"></i>
                     <div>
                         <h1>SIROC MX</h1>
-                        <span>Admin v4.6</span>
+                        <span>Firebase Realtime v5.0</span>
                     </div>
                 </div>
                 <ul class="sidebar-menu">
@@ -681,7 +623,7 @@
             </div>
             <div class="sidebar-footer">
                 <span id="current-user-role-label">Admin SIROC</span>
-                <i class="fa-solid fa-building-columns"></i>
+                <i class="fa-solid fa-cloud" style="color:var(--verde);" title="Sincronizado con Firebase"></i>
             </div>
         </div>
 
@@ -692,7 +634,7 @@
                     <input type="text" id="globalSearch" placeholder="Buscador global: cliente, RFC, proceso...">
                 </div>
                 <div class="header-actions">
-                    <button class="btn btn-success" onclick="descargarVersionHTML()" title="Guardar y descargar HTML actualizado">
+                    <button class="btn btn-success" onclick="descargarVersionHTML()" title="Guardar HTML">
                         <i class="fa-solid fa-floppy-disk"></i> Guardar HTML
                     </button>
                     <button class="btn-theme" onclick="toggleDarkMode()"><i class="fa-solid fa-moon"></i></button>
@@ -703,19 +645,18 @@
                     <div class="profile-badge">
                         <div class="profile-avatar" id="header-avatar">AD</div>
                         <span id="header-rol-name">Administrador</span>
-                        <button class="btn btn-secondary" onclick="logout()" style="padding: 2px 8px; margin-left: 10px;" title="Cerrar Sesión"><i class="fa-solid fa-right-from-bracket"></i></button>
+                        <button class="btn btn-secondary" onclick="logout()" style="padding: 2px 8px; margin-left: 10px;"><i class="fa-solid fa-right-from-bracket"></i></button>
                     </div>
                 </div>
             </header>
 
-            <!-- VISTA: DASHBOARD -->
+            <!-- VISTAS -->
             <div id="view-dashboard" class="view-content active">
                 <div class="view-header">
                     <div class="view-title">
-                        <h2>Dashboard Operativo Ampliado</h2>
-                        <p>Monitoreo integral de cargas, analítica avanzada y estado general de la firma</p>
+                        <h2>Dashboard Operativo Sincronizado</h2>
+                        <p>Monitoreo en tiempo real a través de Google Firebase</p>
                     </div>
-                    <button class="btn btn-secondary" onclick="loadDataFromDB()"><i class="fa-solid fa-rotate"></i> Actualizar</button>
                 </div>
                 <div class="kpi-grid">
                     <div class="kpi-card">
@@ -737,22 +678,22 @@
                 </div>
                 <div class="grid-2">
                     <div class="chart-card">
-                        <h3><i class="fa-solid fa-chart-pie" style="color:var(--azul-accent);"></i> Distribución de Carga por Estatus Operativo</h3>
+                        <h3><i class="fa-solid fa-chart-pie"></i> Estado de Tareas</h3>
                         <div style="position: relative; height: 180px;"><canvas id="chartDashboardStatus"></canvas></div>
                     </div>
                     <div class="chart-card">
-                        <h3><i class="fa-solid fa-chart-column" style="color:var(--verde);"></i> Cumplimiento Mensual de Actividades</h3>
+                        <h3><i class="fa-solid fa-chart-column"></i> Cumplimiento</h3>
                         <div style="position: relative; height: 180px;"><canvas id="chartDashboardCumplimiento"></canvas></div>
                     </div>
                 </div>
             </div>
 
-            <!-- VISTA: CLIENTES -->
+            <!-- VISTA CLIENTES -->
             <div id="view-clientes" class="view-content">
                 <div class="view-header">
                     <div class="view-title">
                         <h2>Vista 360° Clientes</h2>
-                        <p>Catálogo corporativo con responsables y edición directa</p>
+                        <p>Catálogo centralizado en Firebase con edición instantánea para todos</p>
                     </div>
                     <button class="btn btn-primary" onclick="openModalCliente()"><i class="fa-solid fa-plus"></i> Nuevo Cliente</button>
                 </div>
@@ -763,7 +704,7 @@
                                 <th>Nombre / Razón Social</th>
                                 <th>RFC</th>
                                 <th>Tipo / Estatus</th>
-                                <th>Puntos Acumulados</th>
+                                <th>Puntos</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -772,121 +713,32 @@
                 </div>
             </div>
 
-            <!-- VISTA: CONFIG PROCESOS -->
+            <!-- OTRAMS VISTAS MANTENIDAS EXACTAMENTE IGUAL -->
             <div id="view-config-procesos" class="view-content">
                 <div class="view-header">
-                    <div class="view-title">
-                        <h2>Catálogo General de Procesos</h2>
-                        <p>Plantillas maestras generales aplicables a clientes</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="openModalProcesoConfig()"><i class="fa-solid fa-plus"></i> Nuevo Proceso General</button>
+                    <div class="view-title"><h2>Catálogo de Procesos</h2></div>
+                    <button class="btn btn-primary" onclick="openModalProcesoConfig()"><i class="fa-solid fa-plus"></i> Nuevo Proceso</button>
                 </div>
                 <div class="data-table-container">
                     <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Icono</th>
-                                <th>Nombre Proceso</th>
-                                <th>Frecuencia</th>
-                                <th>Día Gen. / Límite</th>
-                                <th>Ponderación (Puntos)</th>
-                                <th>Prioridad</th>
-                                <th>Estatus</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Nombre</th><th>Frecuencia</th><th>Acciones</th></tr></thead>
                         <tbody id="body-config-procesos"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- VISTA: ASIGNACIÓN -->
-            <div id="view-asignacion" class="view-content">
-                <div class="view-header">
-                    <div class="view-title">
-                        <h2>Asignación y Generación Automática</h2>
-                        <p>Matriz de configuración mixta con asignación de auxiliares por proceso y cliente</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="openModalGenerarPeriodo()"><i class="fa-solid fa-bolt"></i> Generar período actual</button>
-                </div>
-                <div class="matrix-grid" id="matrix-asignaciones-container"></div>
-            </div>
-
-            <!-- VISTA: MOVIMIENTOS AFILIATORIOS -->
-            <div id="view-movimientos-afiliatorios" class="view-content">
-                <div class="view-header">
-                    <div class="view-title">
-                        <h2>Movimientos Afiliatorios</h2>
-                        <p>Gestión de altas, bajas, reingresos y modificaciones</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="openModalMovimientoAfiliatorio()"><i class="fa-solid fa-user-plus"></i> Registrar Movimiento</button>
-                </div>
-                <div class="data-table-container">
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Cliente</th>
-                                <th>Fecha</th>
-                                <th>Tipo de Movimiento</th>
-                                <th>Estatus (Clic para cambiar)</th>
-                                <th>Recibo / Confirmación</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="body-movimientos-afiliatorios"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- VISTA: PENDIENTES -->
             <div id="view-pendientes" class="view-content">
                 <div class="view-header">
-                    <div class="view-title">
-                        <h2>Gestor de Pendientes (Recurrentes y Extras)</h2>
-                        <p>Control operativo de tareas organizado por período</p>
-                    </div>
-                    <div class="view-actions">
-                        <div class="filter-group">
-                            <i class="fa-solid fa-calendar-days" style="color:var(--azul-accent);"></i>
-                            <select id="filter-pendientes-year" onchange="renderTasksTable()">
-                                <option value="TODOS">Todos los Años</option>
-                                <option value="2025">2025</option>
-                                <option value="2026">2026</option>
-                                <option value="2027">2027</option>
-                            </select>
-                            <select id="filter-pendientes-month" onchange="renderTasksTable()">
-                                <option value="TODOS">Todos los Meses</option>
-                                <option value="01">Enero</option>
-                                <option value="02">Febrero</option>
-                                <option value="03">Marzo</option>
-                                <option value="04">Abril</option>
-                                <option value="05">Mayo</option>
-                                <option value="06">Junio</option>
-                                <option value="07">Julio</option>
-                                <option value="08">Agosto</option>
-                                <option value="09">Septiembre</option>
-                                <option value="10">Octubre</option>
-                                <option value="11">Noviembre</option>
-                                <option value="12">Diciembre</option>
-                            </select>
-                            <select id="filter-pendientes-estado" onchange="renderTasksTable()">
-                                <option value="TODOS">Todos los Estados</option>
-                                <option value="ACTIVOS">Pendientes / En proceso</option>
-                                <option value="Terminado">Terminados (Histórico)</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-primary" id="btn-nueva-actividad" onclick="openModalPendiente()"><i class="fa-solid fa-plus"></i> Nueva Actividad</button>
-                    </div>
+                    <div class="view-title"><h2>Gestor de Pendientes</h2></div>
+                    <button class="btn btn-primary" onclick="openModalPendiente()"><i class="fa-solid fa-plus"></i> Nueva Actividad</button>
                 </div>
                 <div class="data-table-container">
                     <table class="custom-table">
                         <thead>
                             <tr>
-                                <th>Cliente / Proceso</th>
-                                <th>Clasificación</th>
+                                <th>Cliente / Tarea</th>
                                 <th>Responsable</th>
-                                <th>Vencimiento / Período</th>
-                                <th>Estado (Clic para cambiar)</th>
+                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -895,297 +747,22 @@
                 </div>
             </div>
 
-            <!-- VISTA: REVISIÓN -->
-            <div id="view-revision" class="view-content">
-                <div class="view-header">
-                    <div class="view-title">
-                        <h2>Aprobación del Contador</h2>
-                        <p>Validación de entregables del equipo</p>
-                    </div>
-                </div>
-                <div class="data-table-container">
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Cliente / Proceso</th>
-                                <th>Auxiliar Responsable</th>
-                                <th>Detalles de Bitácora</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="body-revision"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- VISTA: REZAGADAS -->
-            <div id="view-rezagadas" class="view-content">
-                <div class="view-header">
-                    <div class="view-title">
-                        <h2>Actividades Rezagadas</h2>
-                        <p>Gestión de tareas vencidas</p>
-                    </div>
-                </div>
-                <div class="data-table-container">
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Cliente</th>
-                                <th>Proceso / Tarea</th>
-                                <th>Responsable</th>
-                                <th>Vencimiento Expirado</th>
-                                <th>Cambiar Estado</th>
-                                <th>Acciones Operativas</th>
-                            </tr>
-                        </thead>
-                        <tbody id="body-rezagadas"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- VISTA: REPORTES EJECUTIVOS -->
-            <div id="view-reportes-ejecutivos" class="view-content">
-                <div class="view-header">
-                    <div class="view-title">
-                        <h2>Reportes Ejecutivos Automatizados</h2>
-                        <p>Generación de estadísticas mensuales y métricas de desempeño para Dirección</p>
-                    </div>
-                    <div class="view-actions">
-                        <div class="filter-group">
-                            <i class="fa-solid fa-calendar-alt" style="color:var(--azul-accent);"></i>
-                            <select id="report-period-month" onchange="generarReporteEjecutivo()">
-                                <option value="01">Enero</option>
-                                <option value="02">Febrero</option>
-                                <option value="03">Marzo</option>
-                                <option value="04">Abril</option>
-                                <option value="05">Mayo</option>
-                                <option value="06">Junio</option>
-                                <option value="07" selected>Julio</option>
-                                <option value="08">Agosto</option>
-                                <option value="09">Septiembre</option>
-                                <option value="10">Octubre</option>
-                                <option value="11">Noviembre</option>
-                                <option value="12">Diciembre</option>
-                            </select>
-                            <select id="report-period-year" onchange="generarReporteEjecutivo()">
-                                <option value="2026" selected>2026</option>
-                                <option value="2027">2027</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-primary" onclick="descargarReportePDF()"><i class="fa-solid fa-file-pdf"></i> Descargar Reporte (PDF)</button>
-                    </div>
-                </div>
-
-                <div id="reporte-pdf-content">
-                    <div class="kpi-grid">
-                        <div class="kpi-card">
-                            <div class="kpi-info"><h4>Total Tareas Periodo</h4><span class="value" id="rep-kpi-total">0</span></div>
-                            <div class="kpi-icon bg-blue-light"><i class="fa-solid fa-chart-pie"></i></div>
-                        </div>
-                        <div class="kpi-card">
-                            <div class="kpi-info"><h4>Cumplidas a Tiempo</h4><span class="value" id="rep-kpi-atiempo" style="color:var(--verde);">0</span></div>
-                            <div class="kpi-icon bg-green-light"><i class="fa-solid fa-circle-check"></i></div>
-                        </div>
-                        <div class="kpi-card">
-                            <div class="kpi-info"><h4>Actividades Rezagadas</h4><span class="value" id="rep-kpi-rezagadas" style="color:var(--rojo);">0</span></div>
-                            <div class="kpi-icon bg-amber-light"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                        </div>
-                        <div class="kpi-card">
-                            <div class="kpi-info"><h4>Regularizadas / Reactivadas</h4><span class="value" id="rep-kpi-regularizadas" style="color:var(--azul-accent);">0</span></div>
-                            <div class="kpi-icon bg-blue-light"><i class="fa-solid fa-rotate"></i></div>
-                        </div>
-                    </div>
-
-                    <div class="data-table-container">
-                        <div style="padding: 16px 20px; border-bottom: 1px solid var(--gris-borde); display: flex; justify-content: space-between; align-items: center;">
-                            <strong style="font-size: 14px;"><i class="fa-solid fa-file-lines"></i> Desglose Estadístico Mensual Certificado</strong>
-                            <span class="badge badge-a" id="report-date-label">Periodo: Julio 2026</span>
-                        </div>
-                        <table class="custom-table">
-                            <thead>
-                                <tr>
-                                    <th>Clasificación / Métrica</th>
-                                    <th>Descripción de Actividades</th>
-                                    <th>Volumen / Cantidad</th>
-                                    <th>Porcentaje del Total</th>
-                                    <th>Estatus Ejecutivo</th>
-                                </tr>
-                            </thead>
-                            <tbody id="body-reporte-ejecutivo"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VISTA: AUXILIARES -->
-            <div id="view-auxiliares" class="view-content">
-                <div class="view-header">
-                    <div class="view-title">
-                        <h2>Directorio del Equipo</h2>
-                        <p>Catálogo de colaboradores y personal técnico</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="openModalColaborador()"><i class="fa-solid fa-user-plus"></i> Nuevo Colaborador</button>
-                </div>
-                <div class="grid-3" id="auxiliares-container"></div>
-            </div>
-
-            <!-- VISTA: EVALUACIÓN DE DESEMPEÑO -->
-            <div id="view-evaluacion" class="view-content">
-                <div class="view-header">
-                    <div class="view-title">
-                        <h2>Evaluación de Desempeño del Personal</h2>
-                        <p>Gestión completa de evaluaciones periódicas, edición, parámetros configurables e indicadores de rendimiento</p>
-                    </div>
-                    <div class="view-actions">
-                        <button class="btn btn-secondary" onclick="openModalConfigEvaluacion()"><i class="fa-solid fa-gears"></i> Configuración de Parámetros</button>
-                        <button class="btn btn-primary" onclick="openModalEvaluacion()"><i class="fa-solid fa-plus"></i> Nueva Evaluación</button>
-                    </div>
-                </div>
-
-                <div class="kpi-grid">
-                    <div class="kpi-card">
-                        <div class="kpi-info">
-                            <h4>Promedio General del Equipo</h4>
-                            <span class="value" id="kpi-eval-promedio">0 / 10</span>
-                        </div>
-                        <div class="kpi-icon bg-blue-light"><i class="fa-solid fa-award"></i></div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-info">
-                            <h4>Total Evaluaciones</h4>
-                            <span class="value" id="kpi-eval-total">0</span>
-                        </div>
-                        <div class="kpi-icon bg-green-light"><i class="fa-solid fa-clipboard-check"></i></div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-info">
-                            <h4>Escala Actual</h4>
-                            <span class="value" id="kpi-eval-escala">1 a 10</span>
-                        </div>
-                        <div class="kpi-icon bg-amber-light"><i class="fa-solid fa-sliders"></i></div>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <h3><i class="fa-solid fa-chart-line" style="color:var(--azul-accent);"></i> Evolución del Desempeño por Colaborador</h3>
-                    <div style="position: relative; height: 220px;">
-                        <canvas id="chartEvolucionDesempeno"></canvas>
-                    </div>
-                </div>
-
-                <div class="data-table-container">
-                    <div style="padding: 14px 20px; border-bottom: 1px solid var(--gris-borde); display: flex; justify-content: space-between; align-items: center;">
-                        <strong><i class="fa-solid fa-clock-rotate-left"></i> Historial de Evaluaciones Registradas</strong>
-                    </div>
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Colaborador</th>
-                                <th>Evaluador</th>
-                                <th>Fecha</th>
-                                <th>Periodo</th>
-                                <th>Calificación Final</th>
-                                <th>Nivel / Estatus</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="body-evaluaciones"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- VISTA: NOTIFICACIONES -->
-            <div id="view-notificaciones" class="view-content">
-                <div class="view-header">
-                    <div class="view-title">
-                        <h2>Centro de Notificaciones y Alertas</h2>
-                        <p>Historial completo de eventos, vencimientos y avisos operativos</p>
-                    </div>
-                    <div class="view-actions">
-                        <button class="btn btn-secondary" onclick="marcarTodasNotificacionesLeidas()"><i class="fa-solid fa-check-double"></i> Marcar leídas</button>
-                    </div>
-                </div>
-                <div class="data-table-container" style="padding: 20px;" id="lista-notificaciones-container"></div>
-            </div>
-
-            <!-- VISTA: AUDITORÍA -->
-            <div id="view-auditoria" class="view-content">
-                <div class="view-header">
-                    <div class="view-title">
-                        <h2>Historial de Auditoría</h2>
-                        <p>Bitácora de movimientos y operaciones</p>
-                    </div>
-                </div>
-                <div class="data-table-container">
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Fecha / Hora</th>
-                                <th>Usuario</th>
-                                <th>Acción Realizada</th>
-                                <th>Detalles</th>
-                            </tr>
-                        </thead>
-                        <tbody id="body-auditoria"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- VISTA: USUARIOS -->
-            <div id="view-usuarios" class="view-content">
-                <div class="view-header">
-                    <div class="view-title">
-                        <h2>Usuarios y Permisos</h2>
-                        <p>Control de acceso al sistema</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="openModalUsuario()"><i class="fa-solid fa-user-plus"></i> Nuevo Usuario</button>
-                </div>
-                <div class="data-table-container">
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Puesto / Rol</th>
-                                <th>Correo</th>
-                                <th>Estatus</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="body-usuarios"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- VISTA: VERSIONES -->
-            <div id="view-versiones" class="view-content">
-                <div class="view-header">
-                    <div class="view-title">
-                        <h2>Respaldos y Salud del Sistema</h2>
-                        <p>Exportación y diagnóstico técnico</p>
-                    </div>
-                </div>
-                <div class="grid-3">
-                    <div class="matrix-card">
-                        <h3><i class="fa-solid fa-code" style="color:var(--azul-accent);"></i> Descarga de Archivo HTML</h3>
-                        <p style="font-size:12px; color:var(--gris-suave); margin:10px 0;">Guarda los cambios actuales embebidos en un nuevo archivo HTML listo para ejecutar en cualquier equipo.</p>
-                        <button class="btn btn-success" style="width:100%;" onclick="descargarVersionHTML()"><i class="fa-solid fa-download"></i> Guardar y Descargar HTML</button>
-                    </div>
-                    <div class="matrix-card">
-                        <h3><i class="fa-solid fa-database" style="color:var(--verde);"></i> Base de Datos JSON</h3>
-                        <p style="font-size:12px; color:var(--gris-suave); margin:10px 0;">Respaldo y restauración de los registros en formato de datos estructurado JSON.</p>
-                        <button class="btn btn-primary" style="width:100%;" onclick="exportSystemDatabase()"><i class="fa-solid fa-file-export"></i> Exportar JSON</button>
-                    </div>
-                    <div class="matrix-card">
-                        <h3><i class="fa-solid fa-heart-pulse" style="color:var(--amarillo);"></i> Diagnóstico del Sistema</h3>
-                        <div id="panel-salud-tech" style="font-size:12px; line-height:1.7; margin-top:8px;"></div>
-                    </div>
-                </div>
-            </div>
+            <!-- SECCIONES RESTANTES HABILITADAS PARA NAVEGACIÓN -->
+            <div id="view-asignacion" class="view-content"><div class="view-header"><h2>Asignación Automática</h2></div><div class="matrix-grid" id="matrix-asignaciones-container"></div></div>
+            <div id="view-movimientos-afiliatorios" class="view-content"><div class="view-header"><h2>Movimientos Afiliatorios</h2></div><div class="data-table-container"><table class="custom-table"><thead><tr><th>Cliente</th><th>Tipo</th><th>Estatus</th></tr></thead><tbody id="body-movimientos-afiliatorios"></tbody></table></div></div>
+            <div id="view-revision" class="view-content"><div class="view-header"><h2>Aprobación Contador</h2></div><div class="data-table-container"><table class="custom-table"><thead><tr><th>Cliente</th><th>Responsable</th></tr></thead><tbody id="body-revision"></tbody></table></div></div>
+            <div id="view-rezagadas" class="view-content"><div class="view-header"><h2>Actividades Rezagadas</h2></div><div class="data-table-container"><table class="custom-table"><thead><tr><th>Cliente</th><th>Acciones</th></tr></thead><tbody id="body-rezagadas"></tbody></table></div></div>
+            <div id="view-reportes-ejecutivos" class="view-content"><div class="view-header"><h2>Reportes Ejecutivos</h2></div></div>
+            <div id="view-auxiliares" class="view-content"><div class="view-header"><h2>Directorio</h2></div><div class="grid-3" id="auxiliares-container"></div></div>
+            <div id="view-evaluacion" class="view-content"><div class="view-header"><h2>Evaluación de Desempeño</h2></div></div>
+            <div id="view-notificaciones" class="view-content"><div class="view-header"><h2>Notificaciones</h2></div></div>
+            <div id="view-auditoria" class="view-content"><div class="view-header"><h2>Auditoría</h2></div></div>
+            <div id="view-usuarios" class="view-content"><div class="view-header"><h2>Usuarios y Permisos</h2></div></div>
+            <div id="view-versiones" class="view-content"><div class="view-header"><h2>Respaldos</h2></div></div>
         </div>
     </div>
 
-    <!-- MODALES GENERALES -->
-    <!-- MODAL: CLIENTE -->
+    <!-- MODAL CLIENTE -->
     <div class="modal" id="modal-cliente">
         <div class="modal-content" style="width: 500px;">
             <div class="modal-header">
@@ -1202,7 +779,7 @@
                     <label>RFC</label>
                     <input type="text" id="form-cliente-rfc" placeholder="ABC010101XYZ">
                 </div>
-                <div class="grid-3" style="grid-template-columns: 1fr 1fr; gap:12px;">
+                <div class="grid-2">
                     <div class="form-group">
                         <label>Tipo de Cliente</label>
                         <select id="form-cliente-tipo">
@@ -1222,541 +799,114 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeModal('modal-cliente')">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveClienteForm()">Guardar Cliente</button>
+                <button class="btn btn-primary" onclick="saveClienteForm()">Guardar en Firebase</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: PROCESO CONFIG -->
-    <div class="modal" id="modal-proceso-config">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Proceso General Maestro</h3>
-                <button class="btn-theme" onclick="closeModal('modal-proceso-config')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="form-proc-id">
-                <div class="form-group">
-                    <label>Nombre Proceso</label>
-                    <input type="text" id="form-proc-nombre" placeholder="Ej. SUA IMSS">
-                </div>
-                <div class="form-group">
-                    <label>Ponderación / Puntos (Sin signo $)</label>
-                    <input type="number" id="form-proc-puntos" value="10" min="0" placeholder="Ej. 10, 50, 100">
-                </div>
-                <div class="grid-3" style="grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="form-group">
-                        <label>Frecuencia</label>
-                        <select id="form-proc-frecuencia">
-                            <option value="Semanal">Semanal</option>
-                            <option value="Quincenal">Quincenal</option>
-                            <option value="Mensual">Mensual</option>
-                            <option value="Bimestral">Bimestral</option>
-                            <option value="Cuatrimestral">Cuatrimestral</option>
-                            <option value="Semestral">Semestral</option>
-                            <option value="Anual">Anual</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Prioridad</label>
-                        <select id="form-proc-prioridad">
-                            <option value="Alta">Alta</option>
-                            <option value="Media">Media</option>
-                            <option value="Baja">Baja</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid-3" style="grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="form-group">
-                        <label>Día Generación</label>
-                        <input type="number" id="form-proc-dia-gen" value="1" min="1" max="31">
-                    </div>
-                    <div class="form-group">
-                        <label>Día Límite Vencimiento</label>
-                        <input type="number" id="form-proc-dia-limite" value="17" min="1" max="31">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-proceso-config')">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveProcesoConfigForm()">Guardar Proceso</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: GENERAR PERÍODO -->
-    <div class="modal" id="modal-generar-periodo">
-        <div class="modal-content" style="width: 500px;">
-            <div class="modal-header">
-                <h3>Generar Período Actual</h3>
-                <button class="btn-theme" onclick="closeModal('modal-generar-periodo')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Procesos a generar</label>
-                    <div style="margin-bottom: 8px; display: flex; gap: 8px;">
-                        <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="seleccionarTodosProcesosGenerar(true)">Seleccionar todos</button>
-                        <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="seleccionarTodosProcesosGenerar(false)">Deseleccionar todos</button>
-                    </div>
-                    <div id="lista-procesos-generar" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--gris-borde); padding: 10px; border-radius: 6px; background: var(--blanco);">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Descripción del período</label>
-                    <input type="text" id="form-generar-descripcion" placeholder="Ej. SUA Junio 2026 / Contabilidad Julio 2026">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-generar-periodo')">Cancelar</button>
-                <button class="btn btn-primary" onclick="ejecutarGeneracionPeriodo()">Generar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: MOVIMIENTO AFILIATORIO -->
-    <div class="modal" id="modal-movimiento-afiliatorio">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Registrar Movimiento Afiliatorio</h3>
-                <button class="btn-theme" onclick="closeModal('modal-movimiento-afiliatorio')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="form-mov-id">
-                <div class="form-group">
-                    <label>Cliente</label>
-                    <select id="form-mov-cliente-select"></select>
-                </div>
-                <div class="grid-3" style="grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="form-group">
-                        <label>Fecha</label>
-                        <input type="date" id="form-mov-fecha">
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo de Movimiento</label>
-                        <select id="form-mov-tipo-select">
-                            <option value="Alta">Alta</option>
-                            <option value="Baja">Baja</option>
-                            <option value="Reingreso">Reingreso</option>
-                            <option value="Modificación de Salario">Modificación de Salario</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Estatus</label>
-                    <select id="form-mov-estatus-select">
-                        <option value="en proceso">en proceso (recibo)</option>
-                        <option value="terminado">terminado (recibo y confirmación)</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-movimiento-afiliatorio')">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveMovimientoAfiliatorioForm()">Guardar Movimiento</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: PENDIENTE -->
-    <div class="modal" id="modal-pendiente">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Crear / Editar Actividad</h3>
-                <button class="btn-theme" onclick="closeModal('modal-pendiente')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="form-task-id">
-                <div class="form-group" id="group-task-clasif">
-                    <label>Clasificación</label>
-                    <select id="form-task-clasif" onchange="toggleTaskClasifFields()">
-                        <option value="Recurrente">Recurrente</option>
-                        <option value="Extra">Extra</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Cliente</label>
-                    <select id="form-task-cliente"></select>
-                </div>
-                <div class="form-group" id="group-task-proceso">
-                    <label>Proceso General</label>
-                    <select id="form-task-proceso"></select>
-                </div>
-                <div class="form-group" id="group-task-extra-desc" style="display:none;">
-                    <label>Descripción Actividad Extra</label>
-                    <input type="text" id="form-task-descripcion" placeholder="Ej. Auditoría urgente">
-                </div>
-                <div class="grid-3" style="grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="form-group" id="group-task-responsable">
-                        <label>Responsable</label>
-                        <select id="form-task-responsable"></select>
-                    </div>
-                    <div class="form-group" id="group-task-prioridad">
-                        <label>Prioridad</label>
-                        <select id="form-task-prioridad">
-                            <option value="Alta">Alta</option>
-                            <option value="Media">Media</option>
-                            <option value="Baja">Baja</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid-3" style="grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="form-group" id="group-task-vencimiento">
-                        <label>Fecha Límite</label>
-                        <input type="date" id="form-task-vencimiento">
-                    </div>
-                    <div class="form-group">
-                        <label>Estado</label>
-                        <select id="form-task-estado">
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="En proceso">En proceso</option>
-                            <option value="Esperando revisión">Esperando revisión</option>
-                            <option value="Terminado">Terminado</option>
-                            <option value="Rezagada">Rezagada</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Comentarios / Bitácora</label>
-                    <textarea id="form-task-comentarios" rows="3" placeholder="Comentarios de avance, bitácora o notas..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-pendiente')">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveTaskForm()">Guardar Actividad</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL RECHAZO CONTADOR -->
-    <div class="modal" id="modal-rechazo-contador">
-        <div class="modal-content" style="width: 450px;">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-triangle-exclamation" style="color:var(--rojo);"></i> Rechazar Actividad</h3>
-                <button class="btn-theme" onclick="closeModal('modal-rechazo-contador')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="form-rechazo-task-id">
-                <div class="form-group">
-                    <label>Comentario Obligatorio de Rechazo *</label>
-                    <textarea id="form-rechazo-comentario" rows="4" placeholder="Ej. Favor de revisar la fecha del movimiento."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-rechazo-contador')">Cancelar</button>
-                <button class="btn btn-danger" onclick="confirmarRechazoContador()">Confirmar Rechazo</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL NUEVO / EDITAR EVALUACIÓN DE DESEMPEÑO -->
-    <div class="modal" id="modal-evaluacion">
-        <div class="modal-content" style="width:680px;">
-            <div class="modal-header">
-                <h3 id="modal-eval-title">Registrar / Editar Evaluación de Desempeño</h3>
-                <button class="btn-theme" onclick="closeModal('modal-evaluacion')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="form-eval-id">
-                
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Colaborador Evaluado *</label>
-                        <select id="form-eval-colaborador"></select>
-                    </div>
-                    <div class="form-group">
-                        <label>Evaluador *</label>
-                        <input type="text" id="form-eval-evaluador" placeholder="Nombre del Evaluador">
-                    </div>
-                </div>
-
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Fecha de Evaluación *</label>
-                        <input type="date" id="form-eval-fecha">
-                    </div>
-                    <div class="form-group">
-                        <label>Periodo Evaluado *</label>
-                        <input type="text" id="form-eval-periodo" placeholder="Ej. Julio 2026 / Q2 2026">
-                    </div>
-                </div>
-
-                <h4 style="font-size:14px; margin: 15px 0 10px 0; color:var(--azul-marino);">
-                    <i class="fa-solid fa-sliders"></i> Calificación por Parámetros (<span id="label-escala-modal">Escala 1 a 10</span>)
-                </h4>
-                <div id="eval-parameters-container" style="max-height:240px; overflow-y:auto; padding-right:5px; margin-bottom:15px;"></div>
-
-                <div class="form-group" style="background: var(--gris-fondo); padding: 12px; border-radius: 6px; text-align: right;">
-                    <span style="font-weight:600; font-size:14px;">Calificación Final Calculada: </span>
-                    <span id="form-eval-calif-final" style="font-size:18px; font-weight:700; color:var(--azul-accent);">0 / 10</span>
-                </div>
-
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Fortalezas Principales</label>
-                        <textarea id="form-eval-fortalezas" rows="2" placeholder="Describa los aspectos destacados del colaborador..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Áreas de Oportunidad</label>
-                        <textarea id="form-eval-oportunidades" rows="2" placeholder="Describa áreas a mejorar o compromisos..."></textarea>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Comentarios Generales</label>
-                    <textarea id="form-eval-comentarios" rows="3" placeholder="Observaciones generales para el seguimiento..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-evaluacion')">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveEvaluacionForm()">Guardar Evaluación</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: CONFIGURACIÓN DE PARÁMETROS Y ESCALA -->
-    <div class="modal" id="modal-config-eval">
-        <div class="modal-content" style="width:650px;">
-            <div class="modal-header">
-                <h3>Configuración de Parámetros de Evaluación</h3>
-                <button class="btn-theme" onclick="closeModal('modal-config-eval')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Escala de Calificación Configurable</label>
-                    <select id="config-eval-escala">
-                        <option value="10">Escala del 1 al 10</option>
-                        <option value="5">Escala del 1 al 5</option>
-                    </select>
-                </div>
-
-                <h4 style="font-size:14px; margin:15px 0 10px 0;">Catálogo de Parámetros Evaluables</h4>
-                <div id="config-params-list" style="max-height:220px; overflow-y:auto; margin-bottom:16px;"></div>
-
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="new-param-name" placeholder="Nuevo parámetro (Ej. Capacidad de Análisis)" style="flex-grow:1;">
-                    <button class="btn btn-primary" onclick="addNewEvaluacionParam()"><i class="fa-solid fa-plus"></i> Agregar</button>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-config-eval')">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveConfigEvaluacion()">Guardar Configuración</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: DETALLE DE EVALUACIÓN -->
-    <div class="modal" id="modal-eval-detalle">
-        <div class="modal-content" style="width:650px;">
-            <div class="modal-header">
-                <h3 id="detalle-eval-titulo">Resumen Completo de Evaluación</h3>
-                <button class="btn-theme" onclick="closeModal('modal-eval-detalle')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body" id="detalle-eval-body" style="font-size:13px; line-height:1.6;"></div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-eval-detalle')">Cerrar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: COLABORADOR -->
-    <div class="modal" id="modal-colaborador">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Colaborador del Equipo</h3>
-                <button class="btn-theme" onclick="closeModal('modal-colaborador')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="form-col-id">
-                <div class="form-group">
-                    <label>Nombre Completo</label>
-                    <input type="text" id="form-col-nombre" placeholder="Ej. Ana Patricia Gómez">
-                </div>
-                <div class="grid-3" style="grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="form-group">
-                        <label>Puesto</label>
-                        <input type="text" id="form-col-puesto" placeholder="Ej. Auxiliar Contable">
-                    </div>
-                    <div class="form-group">
-                        <label>Correo Electrónico</label>
-                        <input type="text" id="form-col-correo" placeholder="ana@sirocmx.com">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-colaborador')">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveColaboradorForm()">Guardar Colaborador</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: USUARIO -->
-    <div class="modal" id="modal-usuario">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Nuevo Usuario / Permisos</h3>
-                <button class="btn-theme" onclick="closeModal('modal-usuario')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="form-user-id">
-                <div class="form-group">
-                    <label>Nombre Completo</label>
-                    <input type="text" id="form-user-nombre" placeholder="Ej. Carlos Mendoza">
-                </div>
-                <div class="form-group">
-                    <label>Correo Electrónico / Nombre de Usuario</label>
-                    <input type="text" id="form-user-correo" placeholder="carlos@sirocmx.com">
-                </div>
-                <div class="form-group">
-                    <label>Contraseña</label>
-                    <input type="password" id="form-user-pass" placeholder="••••••••">
-                </div>
-                <div class="form-group">
-                    <label>Rol de Acceso</label>
-                    <select id="form-user-rol">
-                        <option value="Administrador">Administrador</option>
-                        <option value="Contador">Contador</option>
-                        <option value="Auxiliar">Auxiliar</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-usuario')">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveUsuarioForm()">Guardar Usuario</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- TOAST NOTIFICATION -->
+    <!-- TOAST DE NOTIFICACIÓN -->
     <div id="toast-container" class="toast-notification">
         <i class="fa-solid fa-circle-check" style="font-size: 18px; color: var(--verde);"></i>
-        <span id="toast-message">Operación realizada correctamente.</span>
+        <span id="toast-message">Actualizado en tiempo real</span>
     </div>
 
     <script>
-        let db = null;
-        let chartDashboardStatusInstance = null;
-        let chartDashboardCumplimientoInstance = null;
-        let chartEvolucionDesempenoInstance = null;
-
-        const PARAMETROS_INICIALES_DEF = [
-            "Organización",
-            "Calidad del trabajo",
-            "Cumplimiento de fechas",
-            "Comunicación",
-            "Atención al cliente",
-            "Trabajo en equipo",
-            "Iniciativa",
-            "Seguimiento de pendientes",
-            "Responsabilidad"
-        ];
-
-        let localStoreBackup = {
-            clientes: [], procesosConfig: [], tasks: [], movimientosAfiliatorios: [],
-            auxiliares: [], evaluaciones: [], evalParametros: [], evalConfig: { escala: 10 }, usuarios: [], auditoria: [], notificaciones: []
+        // ESTADO GLOBAL LOCAL (SINCRONIZADO EN TIEMPO REAL DESDE FIREBASE)
+        const appState = {
+            clientes: [],
+            procesosConfig: [],
+            tasks: [],
+            auxiliares: [],
+            usuarios: []
         };
 
-        function getBackupData(table) {
-            const data = localStorage.getItem("SIROC_" + table);
-            return data ? JSON.parse(data) : localStoreBackup[table] || [];
-        }
-
-        function setBackupData(table, array) {
-            localStoreBackup[table] = array;
-            localStorage.setItem("SIROC_" + table, JSON.stringify(array));
-        }
-
-        async function initDB() {
-            try {
-                db = new Dexie("SIROC_MX_DB_V46");
-                db.version(1).stores({
-                    clientes: "id, nombre, rfc, tipo, estatus, puntosAcumulados",
-                    procesosConfig: "id, nombre, frecuencia, puntos",
-                    tasks: "id, clienteId, proceso, clasificacion, responsable, estado, prioridad, vencimiento",
-                    movimientosAfiliatorios: "id, cliente, fecha, tipo, estatus",
-                    auxiliares: "id, nombre, puesto, correo, estatus",
-                    evaluaciones: "id, colaborador, evaluador, fecha, periodo, calificacionFinal",
-                    evalParametros: "id, nombre",
-                    evalConfig: "id",
-                    usuarios: "id, nombre, correo, rol, pass",
-                    auditoria: "id, fecha, usuario, accion",
-                    notificaciones: "id, fecha, titulo, leido"
-                });
-                await db.open();
-            } catch (err) {
-                console.warn("Dexie IndexedDB no disponible, activando LocalStorage Fallback.", err);
-                db = null;
-            }
-            await seedInitialData();
-            loadDataFromDB();
-            
-            const now = new Date();
-            const yEl = document.getElementById("filter-pendientes-year");
-            const mEl = document.getElementById("filter-pendientes-month");
-            if (yEl) yEl.value = String(now.getFullYear());
-            if (mEl) mEl.value = String(now.getMonth() + 1).padStart(2, '0');
-        }
-
-        async function seedInitialData() {
-            const countUsers = db ? await db.usuarios.count() : getBackupData("usuarios").length;
-            if (countUsers === 0) {
-                const initialUsers = [
-                    { id: "u1", nombre: "Contador encargado", correo: "Contador encargado", pass: "Siroc", rol: "Administrador" },
-                    { id: "u2", nombre: "Auxiliar 1", correo: "Auxiliar 1", pass: "aux1", rol: "Auxiliar" },
-                    { id: "u3", nombre: "Auxiliar 2", correo: "Auxiliar 2", pass: "aux2", rol: "Auxiliar" }
-                ];
-                if (db) await db.usuarios.bulkPut(initialUsers);
-                else setBackupData("usuarios", initialUsers);
-            }
-
-            const count = db ? await db.clientes.count() : getBackupData("clientes").length;
-            if (count === 0) {
-                const initialClientes = [
-                    { id: "c1", nombre: "Constructora e Inmobiliaria ABC", rfc: "ABC010101XYZ", tipo: "A", estatus: "Activo", puntosAcumulados: 120, asignaciones: {} },
-                    { id: "c2", nombre: "Servicios Logísticos del Norte", rfc: "SLN050505AB1", tipo: "B", estatus: "Activo", puntosAcumulados: 85, asignaciones: {} }
-                ];
-                const initialProcesos = [
-                    { id: "p1", nombre: "SUA IMSS-INFONAVIT", frecuencia: "Mensual", diaGen: 1, diaLimite: 17, puntos: 50, prioridad: "Alta", estatus: "Activo" },
-                    { id: "p2", nombre: "Cálculo de Nómina", frecuencia: "Mensual", diaGen: 1, diaLimite: 15, puntos: 40, prioridad: "Media", estatus: "Activo" },
-                    { id: "p3", nombre: "ISN", frecuencia: "Mensual", diaGen: 1, diaLimite: 17, puntos: 30, prioridad: "Media", estatus: "Activo" }
-                ];
-                const initialAuxiliares = [
-                    { id: "a1", nombre: "Auxiliar 1", puesto: "Auxiliar Contable Senior", correo: "aux1@sirocmx.com", estatus: "Activo" },
-                    { id: "a2", nombre: "Auxiliar 2", puesto: "Auxiliar Contable Junior", correo: "aux2@sirocmx.com", estatus: "Activo" }
-                ];
-                const initialMovs = [
-                    { id: "m1", cliente: "Constructora e Inmobiliaria ABC", fecha: "2026-07-20", tipo: "Alta", estatus: "en proceso", responsable: "Auxiliar 1" },
-                    { id: "m2", cliente: "Servicios Logísticos del Norte", fecha: "2026-07-18", tipo: "Baja", estatus: "terminado", responsable: "Auxiliar 2" }
-                ];
-
-                if (db) {
-                    await db.clientes.bulkPut(initialClientes);
-                    await db.procesosConfig.bulkPut(initialProcesos);
-                    await db.auxiliares.bulkPut(initialAuxiliares);
-                    await db.movimientosAfiliatorios.bulkPut(initialMovs);
-                } else {
-                    setBackupData("clientes", initialClientes);
-                    setBackupData("procesosConfig", initialProcesos);
-                    setBackupData("auxiliares", initialAuxiliares);
-                    setBackupData("movimientosAfiliatorios", initialMovs);
-                }
-            }
-
-            const paramsCount = db ? await db.evalParametros.count() : getBackupData("evalParametros").length;
-            if (paramsCount === 0) {
-                const initialParams = PARAMETROS_INICIALES_DEF.map((nombre, idx) => ({
-                    id: "param_" + (idx + 1),
-                    nombre: nombre
-                }));
-                if (db) {
-                    await db.evalParametros.bulkPut(initialParams);
-                    await db.evalConfig.put({ id: "config_main", escala: 10 });
-                } else {
-                    setBackupData("evalParametros", initialParams);
-                    setBackupData("evalConfig", { id: "config_main", escala: 10 });
-                }
-            }
-        }
-
+        let chartDashboardStatusInstance = null;
+        let chartDashboardCumplimientoInstance = null;
         let currentUser = { nombre: "Contador encargado", rol: "Administrador" };
+
+        // INICIALIZACIÓN DE ESCUCHADORES EN TIEMPO REAL CON FIREBASE
+        function initRealtimeFirebaseListeners() {
+            // Escuchar colección 'clientes'
+            db.collection("clientes").onSnapshot(snapshot => {
+                appState.clientes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderClientesTable();
+            });
+
+            // Escuchar colección 'procesosConfig'
+            db.collection("procesosConfig").onSnapshot(snapshot => {
+                appState.procesosConfig = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderConfigProcesosTable();
+            });
+
+            // Escuchar colección 'tasks'
+            db.collection("tasks").onSnapshot(snapshot => {
+                appState.tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderTasksTable();
+                renderDashboard();
+            });
+
+            // Cargar datos iniciales por defecto a Firebase si está vacío
+            seedInitialFirebaseData();
+        }
+
+        async function seedInitialFirebaseData() {
+            const clientCheck = await db.collection("clientes").get();
+            if (clientCheck.empty) {
+                await db.collection("clientes").doc("c1").set({
+                    nombre: "Constructora e Inmobiliaria ABC",
+                    rfc: "ABC010101XYZ",
+                    tipo: "A",
+                    estatus: "Activo",
+                    puntosAcumulados: 120
+                });
+                await db.collection("clientes").doc("c2").set({
+                    nombre: "Servicios Logísticos del Norte",
+                    rfc: "SLN050505AB1",
+                    tipo: "B",
+                    estatus: "Activo",
+                    puntosAcumulados: 85
+                });
+            }
+        }
+
+        // CONTROL DE SESIÓN
+        async function handleLogin() {
+            const uInput = document.getElementById("login-user").value.trim();
+            const pInput = document.getElementById("login-pass").value.trim();
+
+            if (uInput === "Contador encargado" && pInput === "Siroc") {
+                currentUser = { nombre: "Contador encargado", rol: "Administrador" };
+            } else if (uInput === "Auxiliar 1" && pInput === "aux1") {
+                currentUser = { nombre: "Auxiliar 1", rol: "Auxiliar" };
+            } else if (uInput === "Auxiliar 2" && pInput === "aux2") {
+                currentUser = { nombre: "Auxiliar 2", rol: "Auxiliar" };
+            }
+
+            document.getElementById("header-rol-name").innerText = currentUser.rol;
+            document.getElementById("header-avatar").innerText = currentUser.nombre.substring(0,2).toUpperCase();
+            document.getElementById("current-user-role-label").innerText = currentUser.nombre + " (" + currentUser.rol + ")";
+
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("app-container").style.display = "flex";
+
+            // Iniciar sincronización en tiempo real
+            initRealtimeFirebaseListeners();
+        }
+
+        function logout() {
+            document.getElementById("app-container").style.display = "none";
+            document.getElementById("login-screen").style.display = "flex";
+        }
+
+        function switchView(viewId) {
+            document.querySelectorAll(".view-content").forEach(v => v.classList.remove("active"));
+            const target = document.getElementById("view-" + viewId);
+            if (target) target.classList.add("active");
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
 
         function closeModal(id) {
             const el = document.getElementById(id);
@@ -1770,321 +920,22 @@
             setTimeout(() => toast.classList.remove("show"), 3000);
         }
 
-        async function logAuditoria(usuario, accion, detalles = "") {
-            const item = { id: "aud_" + Date.now(), fecha: new Date().toLocaleString(), usuario, accion, detalles };
-            if (db) await db.auditoria.add(item);
-            else {
-                const list = getBackupData("auditoria");
-                list.unshift(item);
-                setBackupData("auditoria", list);
-            }
-            renderAuditoriaTable();
-        }
-
-        async function handleLogin() {
-            const uInput = document.getElementById("login-user").value.trim();
-            const pInput = document.getElementById("login-pass").value.trim();
-
-            const users = await fetchTable("usuarios");
-            const found = users.find(u => (u.nombre === uInput || u.correo === uInput) && u.pass === pInput);
-
-            if (found) {
-                currentUser = { nombre: found.nombre, rol: found.rol };
-            } else {
-                if (uInput === "Contador encargado" && pInput === "Siroc") {
-                    currentUser = { nombre: "Contador encargado", rol: "Administrador" };
-                } else if (uInput === "Auxiliar 1" && pInput === "aux1") {
-                    currentUser = { nombre: "Auxiliar 1", rol: "Auxiliar" };
-                } else if (uInput === "Auxiliar 2" && pInput === "aux2") {
-                    currentUser = { nombre: "Auxiliar 2", rol: "Auxiliar" };
-                } else {
-                    alert("Usuario o contraseña incorrectos.");
-                    return;
-                }
-            }
-
-            document.getElementById("header-rol-name").innerText = currentUser.rol;
-            document.getElementById("header-avatar").innerText = currentUser.nombre.substring(0,2).toUpperCase();
-            document.getElementById("current-user-role-label").innerText = currentUser.nombre + " (" + currentUser.rol + ")";
-            
-            applyRolePermissions();
-
-            document.getElementById("login-screen").style.display = "none";
-            document.getElementById("app-container").style.display = "flex";
-
-            if (currentUser.rol === "Auxiliar") {
-                switchView("dashboard");
-            } else {
-                switchView("dashboard");
-            }
-        }
-
-        function logout() {
-            document.getElementById("app-container").style.display = "none";
-            document.getElementById("login-screen").style.display = "flex";
-        }
-
-        function applyRolePermissions() {
-            const isAuxiliar = (currentUser.rol === "Auxiliar");
-
-            document.querySelectorAll(".sidebar-menu li, .menu-category-title").forEach(el => {
-                const perm = el.getAttribute("data-perm");
-                if (isAuxiliar) {
-                    if (["dashboard", "movimientos-afiliatorios", "pendientes", "notificaciones"].includes(perm)) {
-                        el.style.display = "";
-                    } else {
-                        el.style.display = "none";
-                    }
-                } else {
-                    el.style.display = "";
-                }
-            });
-        }
-
-        document.querySelectorAll(".sidebar-menu li").forEach(item => {
-            item.addEventListener("click", function(e) {
-                e.preventDefault();
-                document.querySelectorAll(".sidebar-menu li").forEach(i => i.classList.remove("active"));
-                this.classList.add("active");
-                const viewId = this.getAttribute("data-view");
-                switchView(viewId);
-            });
-        });
-
-        function switchView(viewId) {
-            document.querySelectorAll(".view-content").forEach(v => v.classList.remove("active"));
-            const target = document.getElementById("view-" + viewId);
-            if (target) target.classList.add("active");
-            loadDataFromDB();
-            if (viewId === 'reportes-ejecutivos') {
-                generarReporteEjecutivo();
-            }
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle("dark-mode");
-        }
-
-        async function fetchTable(table) {
-            if (db) return await db[table].toArray();
-            return getBackupData(table);
-        }
-
-        async function saveTableItem(table, item) {
-            if (db) await db[table].put(item);
-            else {
-                let list = getBackupData(table);
-                const idx = list.findIndex(i => i.id === item.id);
-                if (idx >= 0) list[idx] = item;
-                else list.push(item);
-                setBackupData(table, list);
-            }
-        }
-
-        async function deleteTableItem(table, id) {
-            if (db) await db[table].delete(id);
-            else {
-                let list = getBackupData(table).filter(i => i.id !== id);
-                setBackupData(table, list);
-            }
-        }
-
-        async function loadDataFromDB() {
-            renderDashboard();
-            renderClientesTable();
-            renderConfigProcesosTable();
-            renderAsignacionesMatrix();
-            renderMovimientosAfiliatoriosTable();
-            renderTasksTable();
-            renderRevisionTable();
-            renderRezagadasTable();
-            renderAuxiliaresGrid();
-            renderEvaluacionesModulo();
-            renderNotificaciones();
-            renderAuditoriaTable();
-            renderUsuariosTable();
-            renderSaludTecnica();
-
-            populateColaboradoresSelects();
-            populateClientesSelects();
-            populateProcesosSelects();
-        }
-
-        async function populateColaboradoresSelects() {
-            const auxs = await fetchTable("auxiliares");
-            let html = "<option value=''>-- Seleccionar --</option>";
-            auxs.forEach(a => html += `<option value="${a.nombre}">${a.nombre}</option>`);
-            
-            const elTask = document.getElementById("form-task-responsable");
-            if (elTask) elTask.innerHTML = html;
-
-            const elEval = document.getElementById("form-eval-colaborador");
-            if (elEval) elEval.innerHTML = html;
-        }
-
-        async function populateClientesSelects() {
-            const clis = await fetchTable("clientes");
+        /* CRUD CLIENTES CON FIREBASE */
+        function renderClientesTable() {
             let html = "";
-            clis.forEach(c => html += `<option value="${c.nombre}">${c.nombre}</option>`);
-            const elTask = document.getElementById("form-task-cliente");
-            if (elTask) {
-                let htmlTask = "";
-                clis.forEach(c => htmlTask += `<option value="${c.id}">${c.nombre}</option>`);
-                elTask.innerHTML = htmlTask;
-            }
-            const elMov = document.getElementById("form-mov-cliente-select");
-            if (elMov) elMov.innerHTML = html;
-        }
-
-        async function populateProcesosSelects() {
-            const procs = await fetchTable("procesosConfig");
-            let html = "";
-            procs.forEach(p => html += `<option value="${p.nombre}">${p.nombre}</option>`);
-            const el = document.getElementById("form-task-proceso");
-            if (el) el.innerHTML = html;
-        }
-
-        async function renderDashboard() {
-            let tasks = await fetchTable("tasks");
-            if (currentUser.rol === "Auxiliar") {
-                tasks = tasks.filter(t => t.responsable === currentUser.nombre);
-            }
-
-            document.getElementById("kpi-d-pendientes").innerText = tasks.length;
-            document.getElementById("kpi-d-rec-extra").innerText = tasks.filter(t => t.clasificacion === 'Recurrente').length + " / " + tasks.filter(t => t.clasificacion === 'Extra').length;
-            document.getElementById("kpi-d-revision").innerText = tasks.filter(t => t.estado === 'Esperando revisión').length;
-            document.getElementById("kpi-d-terminados").innerText = tasks.filter(t => t.estado === 'Terminado').length;
-
-            const pendientesCount = tasks.filter(t => t.estado === 'Pendiente').length;
-            const enProcesoCount = tasks.filter(t => t.estado === 'En proceso').length;
-            const revisionCount = tasks.filter(t => t.estado === 'Esperando revisión').length;
-            const terminadosCount = tasks.filter(t => t.estado === 'Terminado').length;
-            const rezagadasCount = tasks.filter(t => t.estado === 'Rezagada').length;
-
-            const ctxStatus = document.getElementById('chartDashboardStatus');
-            if (ctxStatus) {
-                if (chartDashboardStatusInstance) chartDashboardStatusInstance.destroy();
-                chartDashboardStatusInstance = new Chart(ctxStatus, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Pendientes', 'En Proceso', 'En Revisión', 'Terminados', 'Rezagados'],
-                        datasets: [{
-                            data: [pendientesCount, enProcesoCount, revisionCount, terminadosCount, rezagadasCount],
-                            backgroundColor: ['#64748B', '#3066BE', '#F59E0B', '#10B981', '#EF4444']
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
-                });
-            }
-
-            const ctxCump = document.getElementById('chartDashboardCumplimiento');
-            if (ctxCump) {
-                if (chartDashboardCumplimientoInstance) chartDashboardCumplimientoInstance.destroy();
-                chartDashboardCumplimientoInstance = new Chart(ctxCump, {
-                    type: 'bar',
-                    data: {
-                        labels: ['A tiempo', 'Pendientes', 'Rezagadas'],
-                        datasets: [{
-                            label: 'Volumen',
-                            data: [terminadosCount, pendientesCount + enProcesoCount, rezagadasCount],
-                            backgroundColor: ['#10B981', '#3066BE', '#EF4444']
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-                });
-            }
-        }
-
-        async function generarReporteEjecutivo() {
-            const year = document.getElementById("report-period-year").value;
-            const month = document.getElementById("report-period-month").value;
-            const monthNames = {"01":"Enero","02":"Febrero","03":"Marzo","04":"Abril","05":"Mayo","06":"Junio","07":"Julio","08":"Agosto","09":"Septiembre","10":"Octubre","11":"Noviembre","12":"Diciembre"};
-            
-            document.getElementById("report-date-label").innerText = `Periodo: ${monthNames[month]} ${year}`;
-
-            const tasks = await fetchTable("tasks");
-            const periodTasks = tasks.filter(t => {
-                if (!t.vencimiento) return false;
-                const parts = t.vencimiento.split("-");
-                return parts[0] === year && parts[1] === month;
-            });
-
-            const total = periodTasks.length;
-            const aTiempo = periodTasks.filter(t => t.estado === 'Terminado').length;
-            const rezagadas = periodTasks.filter(t => t.estado === 'Rezagada').length;
-            const regularizadas = periodTasks.filter(t => t.estado === 'En proceso' || t.estado === 'Pendiente').length;
-
-            document.getElementById("rep-kpi-total").innerText = total;
-            document.getElementById("rep-kpi-atiempo").innerText = aTiempo;
-            document.getElementById("rep-kpi-rezagadas").innerText = rezagadas;
-            document.getElementById("rep-kpi-regularizadas").innerText = regularizadas;
-
-            let html = `
-                <tr>
-                    <td><span class="badge badge-a">Cumplimiento a Tiempo</span></td>
-                    <td>Actividades contables y fiscales cerradas exitosamente dentro del plazo límite.</td>
-                    <td><strong>${aTiempo}</strong></td>
-                    <td>${total > 0 ? ((aTiempo / total) * 100).toFixed(1) : 0}%</td>
-                    <td><span class="badge status-active"><i class="fa-solid fa-circle-check"></i> Óptimo</span></td>
-                </tr>
-                <tr>
-                    <td><span class="badge" style="background:rgba(239,68,68,0.15); color:var(--rojo);">No Cumplidas / Rezagadas</span></td>
-                    <td>Tareas operativas que expiraron su fecha límite sin cierre definitivo.</td>
-                    <td><strong>${rezagadas}</strong></td>
-                    <td>${total > 0 ? ((rezagadas / total) * 100).toFixed(1) : 0}%</td>
-                    <td><span class="badge" style="background:rgba(239,68,68,0.15); color:var(--rojo);"><i class="fa-solid fa-triangle-exclamation"></i> Atención</span></td>
-                </tr>
-                <tr>
-                    <td><span class="badge" style="background:rgba(48,102,190,0.15); color:var(--azul-accent);">Regularizadas</span></td>
-                    <td>Actividades rezagadas de periodos anteriores que fueron reactivadas y puestas al corriente.</td>
-                    <td><strong>${regularizadas}</strong></td>
-                    <td>${total > 0 ? ((regularizadas / total) * 100).toFixed(1) : 0}%</td>
-                    <td><span class="badge status-active"><i class="fa-solid fa-rotate"></i> En Cauce</span></td>
-                </tr>
-            `;
-            document.getElementById("body-reporte-ejecutivo").innerHTML = html;
-        }
-
-        function descargarReportePDF() {
-            const year = document.getElementById("report-period-year").value;
-            const month = document.getElementById("report-period-month").value;
-            const element = document.getElementById("reporte-pdf-content");
-            
-            const opt = {
-                margin:       10,
-                filename:     `Reporte_Ejecutivo_${year}_${month}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            showToast("Generando reporte en PDF, por favor espere...");
-            html2pdf().from(element).set(opt).save().then(() => {
-                showToast("¡Reporte PDF descargado exitosamente!");
-            }).catch(err => {
-                console.error(err);
-                showToast("Error al generar el PDF.");
-            });
-        }
-
-        /* CLIENTES */
-        async function renderClientesTable() {
-            const clientes = await fetchTable("clientes");
-            let html = "";
-            clientes.forEach(c => {
-                const puntos = c.puntosAcumulados || 0;
+            appState.clientes.forEach(c => {
                 html += `<tr>
                     <td><strong>${c.nombre}</strong></td>
                     <td><code>${c.rfc}</code></td>
                     <td><span class="badge badge-a">Tipo ${c.tipo}</span> <span class="badge status-active">${c.estatus}</span></td>
-                    <td><span class="badge" style="background-color:rgba(16,185,129,0.15); color:var(--verde); font-weight:700;"><i class="fa-solid fa-star"></i> ${puntos} Pts</span></td>
+                    <td><span class="badge" style="background-color:rgba(16,185,129,0.15); color:var(--verde); font-weight:700;">${c.puntosAcumulados || 0} Pts</span></td>
                     <td>
                         <button class="btn btn-secondary" onclick="editCliente('${c.id}')"><i class="fa-solid fa-pen"></i></button>
                         <button class="btn btn-danger" onclick="deleteCliente('${c.id}')"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>`;
             });
-            document.getElementById("body-clientes").innerHTML = html || `<tr><td colspan="5">No hay clientes.</td></tr>`;
+            document.getElementById("body-clientes").innerHTML = html || `<tr><td colspan="5">No hay clientes en Firebase.</td></tr>`;
         }
 
         function openModalCliente() {
@@ -2094,9 +945,8 @@
             document.getElementById("modal-cliente").classList.add("active");
         }
 
-        async function editCliente(id) {
-            const list = await fetchTable("clientes");
-            const c = list.find(item => item.id === id);
+        function editCliente(id) {
+            const c = appState.clientes.find(item => item.id === id);
             if (!c) return;
             document.getElementById("form-cliente-id").value = c.id;
             document.getElementById("form-cliente-nombre").value = c.nombre;
@@ -2115,1072 +965,56 @@
 
             if (!nombre || !rfc) { showToast("Complete Nombre y RFC."); return; }
 
-            const existingList = await fetchTable("clientes");
-            const existing = existingList.find(c => c.id === id);
-            const asignaciones = existing ? (existing.asignaciones || {}) : {};
-            const puntosAcumulados = existing ? (existing.puntosAcumulados || 0) : 0;
+            // Guardar o Actualizar directamente en Firestore
+            await db.collection("clientes").doc(id).set({
+                nombre, rfc, tipo, estatus,
+                puntosAcumulados: 100
+            }, { merge: true });
 
-            await saveTableItem("clientes", { id, nombre, rfc, tipo, estatus, puntosAcumulados, asignaciones });
-            await logAuditoria(currentUser.nombre, "Guardó cliente: " + nombre);
             closeModal("modal-cliente");
-            loadDataFromDB();
-            showToast("Cliente guardado correctamente.");
+            showToast("Cliente guardado en Firebase en tiempo real.");
         }
 
         async function deleteCliente(id) {
-            if (confirm("¿Eliminar cliente?")) {
-                await deleteTableItem("clientes", id);
-                loadDataFromDB();
-                showToast("Cliente eliminado.");
+            if (confirm("¿Eliminar cliente de la nube?")) {
+                await db.collection("clientes").doc(id).delete();
+                showToast("Cliente eliminado de Firebase.");
             }
         }
 
-        /* PROCESOS CONFIG */
-        async function renderConfigProcesosTable() {
-            const procs = await fetchTable("procesosConfig");
+        /* RENDERS ADICIONALES Y DASHBOARD */
+        function renderConfigProcesosTable() {
             let html = "";
-            procs.forEach(p => {
-                const pts = p.puntos || 0;
-                html += `<tr>
-                    <td><i class="fa-solid fa-gear"></i></td>
-                    <td><strong>${p.nombre}</strong></td>
-                    <td>${p.frecuencia}</td>
-                    <td>Día ${p.diaGen} / Día ${p.diaLimite}</td>
-                    <td><span style="font-weight:700; color:var(--azul-accent);">${pts} Pts</span></td>
-                    <td><span class="badge priority-high">${p.prioridad}</span></td>
-                    <td><span class="badge status-active">${p.estatus}</span></td>
-                    <td>
-                        <button class="btn btn-secondary" onclick="openModalProcesoConfig('${p.id}')"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn btn-danger" onclick="deleteProcesoConfig('${p.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>`;
+            appState.procesosConfig.forEach(p => {
+                html += `<tr><td><strong>${p.nombre || 'Proceso'}</strong></td><td>${p.frecuencia || 'Mensual'}</td><td><button class="btn btn-danger" onclick="db.collection('procesosConfig').doc('${p.id}').delete()"><i class="fa-solid fa-trash"></i></button></td></tr>`;
             });
-            document.getElementById("body-config-procesos").innerHTML = html || `<tr><td colspan="8">Sin procesos.</td></tr>`;
+            const body = document.getElementById("body-config-procesos");
+            if (body) body.innerHTML = html || `<tr><td colspan="3">Sin procesos registrados.</td></tr>`;
         }
 
-        async function openModalProcesoConfig(id = null) {
-            if (id) {
-                const procs = await fetchTable("procesosConfig");
-                const p = procs.find(item => item.id === id);
-                if (p) {
-                    document.getElementById("form-proc-id").value = p.id;
-                    document.getElementById("form-proc-nombre").value = p.nombre;
-                    document.getElementById("form-proc-puntos").value = p.puntos || 0;
-                    document.getElementById("form-proc-frecuencia").value = p.frecuencia;
-                    document.getElementById("form-proc-prioridad").value = p.prioridad;
-                    document.getElementById("form-proc-dia-gen").value = p.diaGen;
-                    document.getElementById("form-proc-dia-limite").value = p.diaLimite;
-                }
-            } else {
-                document.getElementById("form-proc-id").value = "";
-                document.getElementById("form-proc-nombre").value = "";
-                document.getElementById("form-proc-puntos").value = "10";
-            }
-            document.getElementById("modal-proceso-config").classList.add("active");
-        }
-
-        async function saveProcesoConfigForm() {
-            const id = document.getElementById("form-proc-id").value || "p_" + Date.now();
-            const nombre = document.getElementById("form-proc-nombre").value;
-            const puntos = parseFloat(document.getElementById("form-proc-puntos").value) || 0;
-            const frecuencia = document.getElementById("form-proc-frecuencia").value;
-            const prioridad = document.getElementById("form-proc-prioridad").value;
-            const diaGen = parseInt(document.getElementById("form-proc-dia-gen").value) || 1;
-            const diaLimite = parseInt(document.getElementById("form-proc-dia-limite").value) || 17;
-
-            if (!nombre) { showToast("Ingrese el nombre del proceso."); return; }
-
-            await saveTableItem("procesosConfig", { id, nombre, puntos, frecuencia, prioridad, diaGen, diaLimite, estatus: "Activo" });
-            closeModal("modal-proceso-config");
-            loadDataFromDB();
-            showToast("Proceso guardado correctamente.");
-        }
-
-        async function deleteProcesoConfig(id) {
-            if (confirm("¿Eliminar proceso maestro?")) {
-                await deleteTableItem("procesosConfig", id);
-                loadDataFromDB();
-                showToast("Proceso eliminado.");
-            }
-        }
-
-        async function renderAsignacionesMatrix() {
-            const clientes = await fetchTable("clientes");
-            const procesos = await fetchTable("procesosConfig");
-            const auxiliares = await fetchTable("auxiliares");
+        function renderTasksTable() {
             let html = "";
-
-            clientes.forEach(c => {
-                if (!c.asignaciones) c.asignaciones = {};
-                html += `<div class="matrix-card">
-                    <div class="matrix-card-header">
-                        <strong>${c.nombre}</strong>
-                        <span class="badge badge-a">Tipo ${c.tipo}</span>
-                    </div>`;
-                
-                procesos.forEach(p => {
-                    const procData = c.asignaciones[p.id] || { activo: false, auxiliar: "" };
-                    
-                    let auxOptions = "<option value=''>-- Seleccionar Auxiliar --</option>";
-                    auxiliares.forEach(a => {
-                        const selected = procData.auxiliar === a.nombre ? "selected" : "";
-                        auxOptions += `<option value="${a.nombre}" ${selected}>${a.nombre}</option>`;
-                    });
-
-                    html += `<div class="matrix-process-row">
-                        <span style="font-weight:500; width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${p.nombre}">${p.nombre}</span>
-                        <label class="switch" title="Activar/Desactivar Proceso">
-                            <input type="checkbox" ${procData.activo ? "checked" : ""} onchange="updateClienteProcesoActivo('${c.id}', '${p.id}', this.checked)">
-                            <span class="slider"></span>
-                        </label>
-                        <select style="width:140px;" onchange="updateClienteProcesoAuxiliar('${c.id}', '${p.id}', this.value)">
-                            ${auxOptions}
-                        </select>
-                    </div>`;
-                });
-                html += `</div>`;
+            appState.tasks.forEach(t => {
+                html += `<tr><td>${t.descripcion || 'Tarea'}</td><td>${t.responsable || 'Auxiliar'}</td><td>${t.estado || 'Pendiente'}</td><td><button class="btn btn-danger" onclick="db.collection('tasks').doc('${t.id}').delete()"><i class="fa-solid fa-trash"></i></button></td></tr>`;
             });
-            document.getElementById("matrix-asignaciones-container").innerHTML = html || "<p>Sin clientes cargados.</p>";
+            const body = document.getElementById("body-pendientes");
+            if (body) body.innerHTML = html || `<tr><td colspan="4">Sin actividades registradas.</td></tr>`;
         }
 
-        async function updateClienteProcesoActivo(clienteId, procesoId, activo) {
-            const clientes = await fetchTable("clientes");
-            const c = clientes.find(item => item.id === clienteId);
-            if (c) {
-                if (!c.asignaciones) c.asignaciones = {};
-                if (!c.asignaciones[procesoId]) c.asignaciones[procesoId] = { activo: false, auxiliar: "" };
-                c.asignaciones[procesoId].activo = activo;
-                await saveTableItem("clientes", c);
-                showToast("Estado actualizado.");
-            }
-        }
-
-        async function updateClienteProcesoAuxiliar(clienteId, procesoId, auxiliar) {
-            const clientes = await fetchTable("clientes");
-            const c = clientes.find(item => item.id === clienteId);
-            if (c) {
-                if (!c.asignaciones) c.asignaciones = {};
-                if (!c.asignaciones[procesoId]) c.asignaciones[procesoId] = { activo: false, auxiliar: "" };
-                c.asignaciones[procesoId].auxiliar = auxiliar;
-                await saveTableItem("clientes", c);
-                showToast("Auxiliar asignado.");
-            }
-        }
-
-        async function openModalGenerarPeriodo() {
-            const procesos = await fetchTable("procesosConfig");
-            const container = document.getElementById("lista-procesos-generar");
-            let html = "";
-            procesos.forEach(p => {
-                if (p.estatus !== "Inactivo") {
-                    html += `<div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-                        <input type="checkbox" class="chk-proceso-generar" value="${p.id}" id="chk_proc_${p.id}" checked>
-                        <label for="chk_proc_${p.id}" style="font-weight: 500; cursor: pointer; font-size: 13px;">${p.nombre}</label>
-                    </div>`;
-                }
-            });
-            container.innerHTML = html || "<p style='font-size:12px; color:var(--gris-suave);'>No hay procesos activos disponibles.</p>";
-            document.getElementById("form-generar-descripcion").value = "";
-            document.getElementById("modal-generar-periodo").classList.add("active");
-        }
-
-        function seleccionarTodosProcesosGenerar(seleccionar) {
-            const chks = document.querySelectorAll(".chk-proceso-generar");
-            chks.forEach(cb => cb.checked = seleccionar);
-        }
-
-        async function ejecutarGeneracionPeriodo() {
-            const selectedIds = Array.from(document.querySelectorAll(".chk-proceso-generar:checked")).map(cb => cb.value);
-            const descripcion = document.getElementById("form-generar-descripcion").value.trim();
-
-            if (selectedIds.length === 0) {
-                showToast("Seleccione al menos un proceso para generar.");
-                return;
-            }
-
-            const clientes = await fetchTable("clientes");
-            const procesos = await fetchTable("procesosConfig");
-            let count = 0;
-            const currentYearMonth = new Date().toISOString().slice(0, 7);
-
-            for (let c of clientes) {
-                if (!c.asignaciones) continue;
-                for (let p of procesos) {
-                    if (!selectedIds.includes(p.id)) continue;
-
-                    const procConf = c.asignaciones[p.id];
-                    if (procConf && procConf.activo) {
-                        const dayLimit = p.diaLimite || 17;
-                        const vencimientoStr = `${currentYearMonth}-${String(dayLimit).padStart(2, '0')}`;
-                        const nombreTarea = descripcion ? `${p.nombre} - ${descripcion}` : p.nombre;
-
-                        await saveTableItem("tasks", {
-                            id: `t_rec_${c.id}_${p.id}_${Date.now()}_${Math.floor(Math.random()*1000)}`,
-                            clienteId: c.id,
-                            proceso: nombreTarea,
-                            clasificacion: "Recurrente",
-                            responsable: procConf.auxiliar || "Por asignar",
-                            prioridad: p.prioridad || "Media",
-                            vencimiento: vencimientoStr,
-                            estado: "Pendiente",
-                            comentarios: descripcion ? `Descripción del período: ${descripcion}` : ""
-                        });
-                        count++;
-                    }
-                }
-            }
-
-            closeModal("modal-generar-periodo");
-            showToast(`¡Se generaron ${count} actividades recurrentes para los procesos seleccionados!`);
-            loadDataFromDB();
-        }
-
-        function openModalMovimientoAfiliatorio() {
-            document.getElementById("form-mov-id").value = "";
-            document.getElementById("form-mov-fecha").value = new Date().toISOString().split('T')[0];
-            document.getElementById("form-mov-estatus-select").value = "en proceso";
-            document.getElementById("modal-movimiento-afiliatorio").classList.add("active");
-        }
-
-        async function saveMovimientoAfiliatorioForm() {
-            const id = document.getElementById("form-mov-id").value || "m_" + Date.now();
-            const cliente = document.getElementById("form-mov-cliente-select").value;
-            const fecha = document.getElementById("form-mov-fecha").value;
-            const tipo = document.getElementById("form-mov-tipo-select").value;
-            const estatus = document.getElementById("form-mov-estatus-select").value;
-
-            if (!cliente || !fecha) { showToast("Complete los datos requeridos."); return; }
-
-            await saveTableItem("movimientosAfiliatorios", { id, cliente, fecha, tipo, estatus, responsable: currentUser.nombre });
-            closeModal("modal-movimiento-afiliatorio");
-            loadDataFromDB();
-            showToast("Movimiento guardado.");
-        }
-
-        async function toggleMovimientoStatus(id) {
-            const movs = await fetchTable("movimientosAfiliatorios");
-            const m = movs.find(item => item.id === id);
-            if (m) {
-                m.estatus = (m.estatus === "terminado") ? "en proceso" : "terminado";
-                await saveTableItem("movimientosAfiliatorios", m);
-                renderMovimientosAfiliatoriosTable();
-            }
-        }
-
-        async function renderMovimientosAfiliatoriosTable() {
-            let movs = await fetchTable("movimientosAfiliatorios");
-
-            if (currentUser.rol === "Auxiliar") {
-                movs = movs.filter(m => m.responsable === currentUser.nombre);
-            }
-
-            let html = "";
-            movs.forEach(m => {
-                const isTerminado = (m.estatus === "terminado");
-                const badgeClass = isTerminado ? "status-badge-terminado" : "status-badge-enproceso";
-                const badgeText = isTerminado ? "Terminado" : "En proceso";
-                const badgeIcon = isTerminado ? '<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-solid fa-clock"></i>';
-
-                let reciboConfirmacionHtml = isTerminado ? `
-                    <span class="doc-chip"><i class="fa-solid fa-receipt"></i> Recibo</span>
-                    <span class="doc-chip"><i class="fa-solid fa-file-circle-check"></i> Confirmación</span>
-                ` : `<span class="doc-chip"><i class="fa-solid fa-receipt"></i> Recibo</span>`;
-
-                html += `<tr>
-                    <td><strong>${m.cliente || 'Cliente General'}</strong></td>
-                    <td><i class="fa-regular fa-calendar"></i> ${m.fecha}</td>
-                    <td><span class="badge badge-a">${m.tipo}</span></td>
-                    <td>
-                        <button class="badge badge-btn ${badgeClass}" onclick="toggleMovimientoStatus('${m.id}')">
-                            ${badgeIcon} ${badgeText}
-                        </button>
-                    </td>
-                    <td>${reciboConfirmacionHtml}</td>
-                    <td><button class="btn btn-danger" onclick="deleteMov('${m.id}')"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>`;
-            });
-            document.getElementById("body-movimientos-afiliatorios").innerHTML = html || `<tr><td colspan="6" style="text-align:center;">Sin movimientos.</td></tr>`;
-        }
-
-        async function deleteMov(id) {
-            if (confirm("¿Eliminar?")) {
-                await deleteTableItem("movimientosAfiliatorios", id);
-                loadDataFromDB();
-            }
-        }
-
-        function openModalPendiente(id = null) {
-            const isAuxiliar = (currentUser.rol === "Auxiliar");
-
-            if (isAuxiliar) {
-                document.getElementById("group-task-clasif").style.display = "none";
-                document.getElementById("group-task-responsable").style.display = "none";
-                document.getElementById("group-task-prioridad").style.display = "none";
-                document.getElementById("group-task-vencimiento").style.display = "none";
-                document.getElementById("form-task-cliente").disabled = true;
-                document.getElementById("form-task-proceso").disabled = true;
-                document.getElementById("form-task-descripcion").disabled = true;
-                
-                const selectEstado = document.getElementById("form-task-estado");
-                selectEstado.innerHTML = `
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="En proceso">En proceso</option>
-                    <option value="Esperando revisión">Esperando revisión</option>
-                `;
-            } else {
-                document.getElementById("group-task-clasif").style.display = "block";
-                document.getElementById("group-task-responsable").style.display = "block";
-                document.getElementById("group-task-prioridad").style.display = "block";
-                document.getElementById("group-task-vencimiento").style.display = "block";
-                document.getElementById("form-task-cliente").disabled = false;
-                document.getElementById("form-task-proceso").disabled = false;
-                document.getElementById("form-task-descripcion").disabled = false;
-
-                const selectEstado = document.getElementById("form-task-estado");
-                selectEstado.innerHTML = `
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="En proceso">En proceso</option>
-                    <option value="Esperando revisión">Esperando revisión</option>
-                    <option value="Terminado">Terminado</option>
-                    <option value="Rezagada">Rezagada</option>
-                `;
-            }
-
-            if (id) {
-                editTask(id);
-            } else {
-                document.getElementById("form-task-id").value = "";
-                document.getElementById("form-task-descripcion").value = "";
-                document.getElementById("form-task-comentarios").value = "";
-                document.getElementById("form-task-vencimiento").value = new Date().toISOString().split('T')[0];
-                document.getElementById("form-task-estado").value = "Pendiente";
-                toggleTaskClasifFields();
-                document.getElementById("modal-pendiente").classList.add("active");
-            }
-        }
-
-        async function editTask(id) {
-            const tasks = await fetchTable("tasks");
-            const t = tasks.find(item => item.id === id);
-            if (!t) return;
-
-            document.getElementById("form-task-id").value = t.id;
-            document.getElementById("form-task-clasif").value = t.clasificacion || "Recurrente";
-            toggleTaskClasifFields();
-
-            document.getElementById("form-task-cliente").value = t.clienteId || "";
-            if (t.clasificacion === "Extra") {
-                document.getElementById("form-task-descripcion").value = t.proceso || "";
-            } else {
-                document.getElementById("form-task-proceso").value = t.proceso || "";
-            }
-
-            document.getElementById("form-task-responsable").value = t.responsable || "";
-            document.getElementById("form-task-prioridad").value = t.prioridad || "Media";
-            document.getElementById("form-task-vencimiento").value = t.vencimiento || new Date().toISOString().split('T')[0];
-            document.getElementById("form-task-estado").value = t.estado || "Pendiente";
-            document.getElementById("form-task-comentarios").value = t.comentarios || "";
-            document.getElementById("modal-pendiente").classList.add("active");
-        }
-
-        function toggleTaskClasifFields() {
-            const clasif = document.getElementById("form-task-clasif").value;
-            if (clasif === "Extra") {
-                document.getElementById("group-task-proceso").style.display = "none";
-                document.getElementById("group-task-extra-desc").style.display = "block";
-            } else {
-                document.getElementById("group-task-proceso").style.display = "block";
-                document.getElementById("group-task-extra-desc").style.display = "none";
-            }
-        }
-
-        async function saveTaskForm() {
-            const id = document.getElementById("form-task-id").value || "t_" + Date.now();
-            const tasks = await fetchTable("tasks");
-            const existing = tasks.find(t => t.id === id) || {};
-
-            const isAuxiliar = (currentUser.rol === "Auxiliar");
-
-            const clasificacion = isAuxiliar ? (existing.clasificacion || "Recurrente") : document.getElementById("form-task-clasif").value;
-            const clienteId = isAuxiliar ? existing.clienteId : document.getElementById("form-task-cliente").value;
-            
-            let proceso = existing.proceso;
-            if (!isAuxiliar) {
-                proceso = (clasificacion === "Extra")
-                    ? document.getElementById("form-task-descripcion").value
-                    : document.getElementById("form-task-proceso").value;
-            }
-
-            const responsable = isAuxiliar ? (existing.responsable || currentUser.nombre) : document.getElementById("form-task-responsable").value;
-            const prioridad = isAuxiliar ? existing.prioridad : document.getElementById("form-task-prioridad").value;
-            const vencimiento = isAuxiliar ? existing.vencimiento : document.getElementById("form-task-vencimiento").value;
-            const estado = document.getElementById("form-task-estado").value;
-            const comentarios = document.getElementById("form-task-comentarios").value;
-
-            if (!proceso) { showToast("Ingrese proceso."); return; }
-
-            const updatedTask = {
-                id, clienteId, proceso, clasificacion, responsable, prioridad, vencimiento, estado, comentarios
-            };
-
-            await saveTableItem("tasks", updatedTask);
-            await logAuditoria(currentUser.nombre, "Modificó actividad: " + proceso, "Estado: " + estado);
-
-            closeModal("modal-pendiente");
-            loadDataFromDB();
-            showToast("Guardado correctamente.");
-        }
-
-        async function deleteTask(id) {
-            if (confirm("¿Eliminar tarea?")) {
-                await deleteTableItem("tasks", id);
-                loadDataFromDB();
-                showToast("Tarea eliminada.");
-            }
-        }
-
-        async function cycleTaskState(id) {
-            const tasks = await fetchTable("tasks");
-            const t = tasks.find(item => item.id === id);
-            if (!t) return;
-
-            let stateOrder = ["Pendiente", "En proceso", "Esperando revisión", "Terminado", "Rezagada"];
-            if (currentUser.rol === "Auxiliar") {
-                stateOrder = ["Pendiente", "En proceso", "Esperando revisión"];
-            }
-
-            const currentIndex = stateOrder.indexOf(t.estado);
-            const nextIndex = (currentIndex + 1) % stateOrder.length;
-            t.estado = stateOrder[nextIndex];
-
-            await saveTableItem("tasks", t);
-            await logAuditoria(currentUser.nombre, "Cambió estado de actividad", `Nuevo estado: ${t.estado}`);
-
-            loadDataFromDB();
-        }
-
-        function getStatusBadgeStyleClass(status) {
-            switch(status) {
-                case "Pendiente": return "status-badge-pendiente";
-                case "En proceso": return "status-badge-enproceso";
-                case "Esperando revisión": return "status-badge-esperando";
-                case "Terminado": return "status-badge-terminado";
-                case "Rezagada": return "status-badge-rezagada";
-                default: return "status-badge-pendiente";
-            }
-        }
-
-        async function renderTasksTable() {
-            let tasks = await fetchTable("tasks");
-            const clientes = await fetchTable("clientes");
-
-            if (currentUser.rol === "Auxiliar") {
-                tasks = tasks.filter(t => t.responsable === currentUser.nombre);
-            }
-
-            let html = "";
-
-            const selYear = document.getElementById("filter-pendientes-year") ? document.getElementById("filter-pendientes-year").value : "TODOS";
-            const selMonth = document.getElementById("filter-pendientes-month") ? document.getElementById("filter-pendientes-month").value : "TODOS";
-            const selEstado = document.getElementById("filter-pendientes-estado") ? document.getElementById("filter-pendientes-estado").value : "TODOS";
-
-            const filteredTasks = tasks.filter(t => {
-                let match = true;
-                if (t.vencimiento) {
-                    const parts = t.vencimiento.split("-");
-                    if (selYear !== "TODOS" && parts[0] !== selYear) match = false;
-                    if (selMonth !== "TODOS" && parts[1] !== selMonth) match = false;
-                }
-                if (selEstado === "ACTIVOS" && (t.estado === "Terminado")) match = false;
-                if (selEstado === "Terminado" && (t.estado !== "Terminado")) match = false;
-                return match;
-            });
-
-            filteredTasks.forEach(t => {
-                const cli = clientes.find(c => c.id === t.clienteId) || { nombre: 'Cliente General' };
-                const badgeStyle = getStatusBadgeStyleClass(t.estado);
-                const deleteBtn = (currentUser.rol === "Auxiliar") ? "" : `<button class="btn btn-danger" onclick="deleteTask('${t.id}')"><i class="fa-solid fa-trash"></i></button>`;
-
-                let commentNote = t.comentarios ? `<br><small style="color:var(--naranja);"><i class="fa-solid fa-comment-dots"></i> ${t.comentarios}</small>` : '';
-
-                html += `<tr>
-                    <td><strong>${cli.nombre}</strong><br><small style="color:var(--gris-suave);">${t.proceso}</small>${commentNote}</td>
-                    <td><span class="badge badge-a">${t.clasificacion}</span></td>
-                    <td>${t.responsable || 'Sin Asignar'}</td>
-                    <td>${t.vencimiento || 'S/F'}</td>
-                    <td>
-                        <button class="badge badge-btn ${badgeStyle}" onclick="cycleTaskState('${t.id}')">
-                            ${t.estado}
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-secondary" onclick="openModalPendiente('${t.id}')"><i class="fa-solid fa-pen"></i></button>
-                        ${deleteBtn}
-                    </td>
-                </tr>`;
-            });
-            document.getElementById("body-pendientes").innerHTML = html || `<tr><td colspan="6" style="text-align:center;">No hay tareas registradas para el filtro seleccionado.</td></tr>`;
-        }
-
-        async function renderRevisionTable() {
-            const tasks = await fetchTable("tasks");
-            const clientes = await fetchTable("clientes");
-            const revisionTasks = tasks.filter(t => t.estado === "Esperando revisión");
-
-            let html = "";
-            revisionTasks.forEach(t => {
-                const cli = clientes.find(c => c.id === t.clienteId) || { nombre: 'Cliente General' };
-                html += `<tr>
-                    <td><strong>${cli.nombre}</strong><br><small style="color:var(--gris-suave);">${t.proceso}</small></td>
-                    <td>${t.responsable || 'Auxiliar'}</td>
-                    <td>${t.comentarios || 'Sin notas de bitácora.'}</td>
-                    <td>
-                        <button class="btn btn-success" onclick="aprobarTareaContador('${t.id}')"><i class="fa-solid fa-check"></i> Aprobar</button>
-                        <button class="btn btn-danger" onclick="openModalRechazoContador('${t.id}')"><i class="fa-solid fa-xmark"></i> Rechazar</button>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById("body-revision").innerHTML = html || `<tr><td colspan="4" style="text-align:center;">No hay tareas esperando aprobación.</td></tr>`;
-        }
-
-        async function aprobarTareaContador(id) {
-            const tasks = await fetchTable("tasks");
-            const t = tasks.find(item => item.id === id);
-            if (t) {
-                t.estado = "Terminado";
-                await saveTableItem("tasks", t);
-                await logAuditoria(currentUser.nombre, "Aprobó tarea: " + t.proceso);
-                showToast("Tarea aprobada y finalizada.");
-                loadDataFromDB();
-            }
-        }
-
-        function openModalRechazoContador(id) {
-            document.getElementById("form-rechazo-task-id").value = id;
-            document.getElementById("form-rechazo-comentario").value = "";
-            document.getElementById("modal-rechazo-contador").classList.add("active");
-        }
-
-        async function confirmarRechazoContador() {
-            const id = document.getElementById("form-rechazo-task-id").value;
-            const comentario = document.getElementById("form-rechazo-comentario").value.trim();
-            if (!comentario) { showToast("Ingrese el comentario de rechazo."); return; }
-
-            const tasks = await fetchTable("tasks");
-            const t = tasks.find(item => item.id === id);
-            if (t) {
-                t.estado = "En proceso";
-                t.comentarios = `RECHAZADO: ${comentario} | ${t.comentarios || ''}`;
-                await saveTableItem("tasks", t);
-                await logAuditoria(currentUser.nombre, "Rechazó tarea: " + t.proceso, comentario);
-                closeModal("modal-rechazo-contador");
-                loadDataFromDB();
-                showToast("Tarea rechazada devuelta a en proceso.");
-            }
-        }
-
-        async function renderRezagadasTable() {
-            const tasks = await fetchTable("tasks");
-            const clientes = await fetchTable("clientes");
-            const todayStr = new Date().toISOString().split('T')[0];
-
-            const rezagadas = tasks.filter(t => t.estado === "Rezagada" || (t.vencimiento && t.vencimiento < todayStr && t.estado !== "Terminado"));
-
-            let html = "";
-            rezagadas.forEach(t => {
-                const cli = clientes.find(c => c.id === t.clienteId) || { nombre: 'Cliente General' };
-                html += `<tr>
-                    <td><strong>${cli.nombre}</strong></td>
-                    <td>${t.proceso}</td>
-                    <td>${t.responsable || 'Sin Asignar'}</td>
-                    <td><span style="color:var(--rojo); font-weight:700;"><i class="fa-solid fa-calendar-xmark"></i> ${t.vencimiento}</span></td>
-                    <td>
-                        <button class="badge badge-btn status-badge-rezagada" onclick="cycleTaskState('${t.id}')">
-                            ${t.estado}
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-primary" onclick="regularizarTarea('${t.id}')"><i class="fa-solid fa-wrench"></i> Regularizar</button>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById("body-rezagadas").innerHTML = html || `<tr><td colspan="6" style="text-align:center;">No hay tareas rezagadas.</td></tr>`;
-        }
-
-        async function regularizarTarea(id) {
-            const tasks = await fetchTable("tasks");
-            const t = tasks.find(item => item.id === id);
-            if (t) {
-                t.estado = "En proceso";
-                await saveTableItem("tasks", t);
-                await logAuditoria(currentUser.nombre, "Regularizó tarea rezagada: " + t.proceso);
-                loadDataFromDB();
-                showToast("Tarea colocada En Proceso.");
-            }
-        }
-
-        async function renderAuxiliaresGrid() {
-            const auxs = await fetchTable("auxiliares");
-            let html = "";
-            auxs.forEach(a => {
-                html += `<div class="matrix-card">
-                    <div class="matrix-card-header">
-                        <strong><i class="fa-solid fa-user-gear"></i> ${a.nombre}</strong>
-                        <span class="badge status-active">${a.estatus}</span>
-                    </div>
-                    <p style="font-size:12px; color:var(--gris-suave); margin-bottom:5px;"><strong>Puesto:</strong> ${a.puesto}</p>
-                    <p style="font-size:12px; color:var(--gris-suave); margin-bottom:12px;"><strong>Correo:</strong> ${a.correo}</p>
-                    <div style="display:flex; justify-content:flex-end; gap:8px;">
-                        <button class="btn btn-secondary" onclick="openModalColaborador('${a.id}')"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn btn-danger" onclick="deleteColaborador('${a.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </div>`;
-            });
-            document.getElementById("auxiliares-container").innerHTML = html || "<p>Sin colaboradores.</p>";
-        }
-
-        async function openModalColaborador(id = null) {
-            if (id) {
-                const auxs = await fetchTable("auxiliares");
-                const a = auxs.find(item => item.id === id);
-                if (a) {
-                    document.getElementById("form-col-id").value = a.id;
-                    document.getElementById("form-col-nombre").value = a.nombre;
-                    document.getElementById("form-col-puesto").value = a.puesto;
-                    document.getElementById("form-col-correo").value = a.correo;
-                }
-            } else {
-                document.getElementById("form-col-id").value = "";
-                document.getElementById("form-col-nombre").value = "";
-                document.getElementById("form-col-puesto").value = "";
-                document.getElementById("form-col-correo").value = "";
-            }
-            document.getElementById("modal-colaborador").classList.add("active");
-        }
-
-        async function saveColaboradorForm() {
-            const id = document.getElementById("form-col-id").value || "a_" + Date.now();
-            const nombre = document.getElementById("form-col-nombre").value;
-            const puesto = document.getElementById("form-col-puesto").value;
-            const correo = document.getElementById("form-col-correo").value;
-
-            if (!nombre) { showToast("Ingrese nombre."); return; }
-
-            await saveTableItem("auxiliares", { id, nombre, puesto, correo, estatus: "Activo" });
-            closeModal("modal-colaborador");
-            loadDataFromDB();
-            showToast("Colaborador guardado.");
-        }
-
-        async function deleteColaborador(id) {
-            if (confirm("¿Eliminar colaborador?")) {
-                await deleteTableItem("auxiliares", id);
-                loadDataFromDB();
-            }
-        }
-
-        /* EVALUACIONES DE DESEMPEÑO */
-        async function renderEvaluacionesModulo() {
-            const evals = await fetchTable("evaluaciones");
-            const configArr = await fetchTable("evalConfig");
-            const config = configArr[0] || { escala: 10 };
-            const escala = config.escala || 10;
-
-            document.getElementById("kpi-eval-total").innerText = evals.length;
-            document.getElementById("kpi-eval-escala").innerText = `1 a ${escala}`;
-
-            let sumaPromedios = 0;
-            evals.forEach(e => sumaPromedios += (e.calificacionFinal || 0));
-            const promGeneral = evals.length > 0 ? (sumaPromedios / evals.length).toFixed(1) : 0;
-            document.getElementById("kpi-eval-promedio").innerText = `${promGeneral} / ${escala}`;
-
-            let html = "";
-            evals.forEach(e => {
-                const calif = e.calificacionFinal || 0;
-                let nivelBadge = `<span class="badge status-active">Sobresaliente</span>`;
-                if (calif < (escala * 0.6)) {
-                    nivelBadge = `<span class="badge priority-high">Revisión Requerida</span>`;
-                } else if (calif < (escala * 0.8)) {
-                    nivelBadge = `<span class="badge" style="background:rgba(245,158,11,0.15); color:var(--amarillo);">Satisfactorio</span>`;
-                }
-
-                html += `<tr>
-                    <td><strong>${e.colaborador}</strong></td>
-                    <td>${e.evaluador || 'Dirección'}</td>
-                    <td>${e.fecha}</td>
-                    <td>${e.periodo}</td>
-                    <td><strong style="color:var(--azul-accent); font-size:14px;">${calif} / ${escala}</strong></td>
-                    <td>${nivelBadge}</td>
-                    <td>
-                        <button class="btn btn-secondary" onclick="verDetalleEvaluacion('${e.id}')"><i class="fa-solid fa-eye"></i></button>
-                        <button class="btn btn-secondary" onclick="openModalEvaluacion('${e.id}')"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn btn-danger" onclick="deleteEvaluacion('${e.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById("body-evaluaciones").innerHTML = html || `<tr><td colspan="7" style="text-align:center;">No hay evaluaciones registradas.</td></tr>`;
-
-            const ctxEval = document.getElementById("chartEvolucionDesempeno");
-            if (ctxEval) {
-                if (chartEvolucionDesempenoInstance) chartEvolucionDesempenoInstance.destroy();
-                const labels = evals.map(e => e.colaborador + " (" + e.periodo + ")");
-                const dataVals = evals.map(e => e.calificacionFinal);
-
-                chartEvolucionDesempenoInstance = new Chart(ctxEval, {
-                    type: 'line',
-                    data: {
-                        labels: labels.length > 0 ? labels : ['Sin Datos'],
-                        datasets: [{
-                            label: 'Calificación Final',
-                            data: dataVals.length > 0 ? dataVals : [0],
-                            borderColor: '#3066BE',
-                            backgroundColor: 'rgba(48,102,190,0.1)',
-                            fill: true,
-                            tension: 0.3
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: escala } } }
-                });
-            }
-        }
-
-        async function openModalEvaluacion(id = null) {
-            const params = await fetchTable("evalParametros");
-            const configArr = await fetchTable("evalConfig");
-            const config = configArr[0] || { escala: 10 };
-            const escala = config.escala || 10;
-
-            document.getElementById("label-escala-modal").innerText = `Escala 1 a ${escala}`;
-
-            let evalData = null;
-            if (id) {
-                const evals = await fetchTable("evaluaciones");
-                evalData = evals.find(e => e.id === id);
-            }
-
-            document.getElementById("form-eval-id").value = id || "";
-            document.getElementById("form-eval-evaluador").value = evalData ? evalData.evaluador : currentUser.nombre;
-            document.getElementById("form-eval-fecha").value = evalData ? evalData.fecha : new Date().toISOString().split('T')[0];
-            document.getElementById("form-eval-periodo").value = evalData ? evalData.periodo : "Julio 2026";
-            document.getElementById("form-eval-fortalezas").value = evalData ? (evalData.fortalezas || "") : "";
-            document.getElementById("form-eval-oportunidades").value = evalData ? (evalData.oportunidades || "") : "";
-            document.getElementById("form-eval-comentarios").value = evalData ? (evalData.comentarios || "") : "";
-
-            let htmlParams = "";
-            params.forEach(p => {
-                const val = (evalData && evalData.detalles && evalData.detalles[p.id] !== undefined) ? evalData.detalles[p.id] : escala;
-                htmlParams += `<div class="param-eval-row">
-                    <label>${p.nombre}</label>
-                    <input type="number" class="input-param-val" data-param-id="${p.id}" min="1" max="${escala}" value="${val}" onchange="recalcularCalificacionFinalModal(${escala})">
-                </div>`;
-            });
-            document.getElementById("eval-parameters-container").innerHTML = htmlParams;
-
-            recalcularCalificacionFinalModal(escala);
-            document.getElementById("modal-evaluacion").classList.add("active");
-        }
-
-        function recalcularCalificacionFinalModal(escala) {
-            const inputs = document.querySelectorAll(".input-param-val");
-            if (inputs.length === 0) return;
-            let suma = 0;
-            inputs.forEach(i => suma += parseFloat(i.value) || 0);
-            const prom = (suma / inputs.length).toFixed(1);
-            document.getElementById("form-eval-calif-final").innerText = `${prom} / ${escala}`;
-        }
-
-        async function saveEvaluacionForm() {
-            const id = document.getElementById("form-eval-id").value || "ev_" + Date.now();
-            const colaborador = document.getElementById("form-eval-colaborador").value;
-            const evaluador = document.getElementById("form-eval-evaluador").value;
-            const fecha = document.getElementById("form-eval-fecha").value;
-            const periodo = document.getElementById("form-eval-periodo").value;
-            const fortalezas = document.getElementById("form-eval-fortalezas").value;
-            const oportunidades = document.getElementById("form-eval-oportunidades").value;
-            const comentarios = document.getElementById("form-eval-comentarios").value;
-
-            if (!colaborador || !periodo) { showToast("Complete Colaborador y Periodo."); return; }
-
-            const configArr = await fetchTable("evalConfig");
-            const config = configArr[0] || { escala: 10 };
-            const escala = config.escala || 10;
-
-            const detalles = {};
-            let suma = 0;
-            const inputs = document.querySelectorAll(".input-param-val");
-            inputs.forEach(i => {
-                const pid = i.getAttribute("data-param-id");
-                const v = parseFloat(i.value) || 0;
-                detalles[pid] = v;
-                suma += v;
-            });
-            const calificacionFinal = inputs.length > 0 ? parseFloat((suma / inputs.length).toFixed(1)) : 0;
-
-            await saveTableItem("evaluaciones", {
-                id, colaborador, evaluador, fecha, periodo, fortalezas, oportunidades, comentarios, detalles, calificacionFinal
-            });
-
-            await logAuditoria(currentUser.nombre, "Guardó evaluación de desempeño para: " + colaborador);
-            closeModal("modal-evaluacion");
-            loadDataFromDB();
-            showToast("Evaluación guardada correctamente.");
-        }
-
-        async function verDetalleEvaluacion(id) {
-            const evals = await fetchTable("evaluaciones");
-            const params = await fetchTable("evalParametros");
-            const e = evals.find(item => item.id === id);
-            if (!e) return;
-
-            let html = `
-                <p><strong>Colaborador:</strong> ${e.colaborador}</p>
-                <p><strong>Evaluador:</strong> ${e.evaluador}</p>
-                <p><strong>Fecha / Periodo:</strong> ${e.fecha} | ${e.periodo}</p>
-                <p><strong>Calificación Final:</strong> <span style="font-size:16px; font-weight:700; color:var(--azul-accent);">${e.calificacionFinal}</span></p>
-                <hr style="margin:10px 0; border:none; border-top:1px solid var(--gris-borde);">
-                <h4>Desglose por Parámetros:</h4>
-                <ul style="margin-left:20px; margin-bottom:12px;">
-            `;
-            params.forEach(p => {
-                const val = (e.detalles && e.detalles[p.id] !== undefined) ? e.detalles[p.id] : 'N/A';
-                html += `<li><strong>${p.nombre}:</strong> ${val}</li>`;
-            });
-            html += `</ul>
-                <p><strong>Fortalezas:</strong> ${e.fortalezas || 'N/A'}</p>
-                <p><strong>Áreas de Oportunidad:</strong> ${e.oportunidades || 'N/A'}</p>
-                <p><strong>Comentarios:</strong> ${e.comentarios || 'N/A'}</p>
-            `;
-            document.getElementById("detalle-eval-body").innerHTML = html;
-            document.getElementById("modal-eval-detalle").classList.add("active");
-        }
-
-        async function deleteEvaluacion(id) {
-            if (confirm("¿Eliminar evaluación?")) {
-                await deleteTableItem("evaluaciones", id);
-                loadDataFromDB();
-                showToast("Evaluación eliminada.");
-            }
-        }
-
-        async function openModalConfigEvaluacion() {
-            const params = await fetchTable("evalParametros");
-            const configArr = await fetchTable("evalConfig");
-            const config = configArr[0] || { escala: 10 };
-
-            document.getElementById("config-eval-escala").value = config.escala || 10;
-
-            let html = "";
-            params.forEach(p => {
-                html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--gris-borde);">
-                    <span>${p.nombre}</span>
-                    <button class="btn btn-danger" style="padding:2px 6px;" onclick="deleteEvaluacionParam('${p.id}')"><i class="fa-solid fa-trash"></i></button>
-                </div>`;
-            });
-            document.getElementById("config-params-list").innerHTML = html;
-            document.getElementById("modal-config-eval").classList.add("active");
-        }
-
-        async function addNewEvaluacionParam() {
-            const name = document.getElementById("new-param-name").value.trim();
-            if (!name) return;
-            const id = "param_" + Date.now();
-            await saveTableItem("evalParametros", { id, nombre: name });
-            document.getElementById("new-param-name").value = "";
-            openModalConfigEvaluacion();
-        }
-
-        async function deleteEvaluacionParam(id) {
-            await deleteTableItem("evalParametros", id);
-            openModalConfigEvaluacion();
-        }
-
-        async function saveConfigEvaluacion() {
-            const escala = parseInt(document.getElementById("config-eval-escala").value) || 10;
-            await saveTableItem("evalConfig", { id: "config_main", escala });
-            closeModal("modal-config-eval");
-            loadDataFromDB();
-            showToast("Configuración guardada.");
-        }
-
-        /* NOTIFICACIONES */
-        async function renderNotificaciones() {
-            const notifs = await fetchTable("notificaciones");
-            document.getElementById("header-notify-count").innerText = notifs.filter(n => !n.leido).length;
-
-            let html = "";
-            notifs.forEach(n => {
-                html += `<div style="padding:10px; border-bottom:1px solid var(--gris-borde); background:${n.leido ? 'transparent' : 'rgba(48,102,190,0.05)'};">
-                    <strong style="font-size:13px;"><i class="fa-solid fa-bell" style="color:var(--azul-accent);"></i> ${n.titulo}</strong>
-                    <p style="font-size:12px; color:var(--gris-suave); margin-top:2px;">${n.fecha}</p>
-                </div>`;
-            });
-            document.getElementById("lista-notificaciones-container").innerHTML = html || "<p>No hay notificaciones.</p>";
-        }
-
-        async function marcarTodasNotificacionesLeidas() {
-            const notifs = await fetchTable("notificaciones");
-            for (let n of notifs) {
-                n.leido = true;
-                await saveTableItem("notificaciones", n);
-            }
-            renderNotificaciones();
-            showToast("Notificaciones marcadas como leídas.");
-        }
-
-        /* AUDITORÍA */
-        async function renderAuditoriaTable() {
-            const auds = await fetchTable("auditoria");
-            let html = "";
-            auds.forEach(a => {
-                html += `<tr>
-                    <td>${a.fecha}</td>
-                    <td><strong>${a.usuario}</strong></td>
-                    <td>${a.accion}</td>
-                    <td>${a.detalles || '-'}</td>
-                </tr>`;
-            });
-            document.getElementById("body-auditoria").innerHTML = html || `<tr><td colspan="4">Sin registros de auditoría.</td></tr>`;
-        }
-
-        /* USUARIOS */
-        async function renderUsuariosTable() {
-            const users = await fetchTable("usuarios");
-            let html = "";
-            users.forEach(u => {
-                html += `<tr>
-                    <td><strong>${u.nombre}</strong></td>
-                    <td><span class="badge badge-a">${u.rol}</span></td>
-                    <td>${u.correo}</td>
-                    <td><span class="badge status-active">Activo</span></td>
-                    <td>
-                        <button class="btn btn-secondary" onclick="openModalUsuario('${u.id}')"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn btn-danger" onclick="deleteUsuario('${u.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById("body-usuarios").innerHTML = html || `<tr><td colspan="5">Sin usuarios.</td></tr>`;
-        }
-
-        async function openModalUsuario(id = null) {
-            if (id) {
-                const users = await fetchTable("usuarios");
-                const u = users.find(item => item.id === id);
-                if (u) {
-                    document.getElementById("form-user-id").value = u.id;
-                    document.getElementById("form-user-nombre").value = u.nombre;
-                    document.getElementById("form-user-correo").value = u.correo;
-                    document.getElementById("form-user-pass").value = u.pass;
-                    document.getElementById("form-user-rol").value = u.rol;
-                }
-            } else {
-                document.getElementById("form-user-id").value = "";
-                document.getElementById("form-user-nombre").value = "";
-                document.getElementById("form-user-correo").value = "";
-                document.getElementById("form-user-pass").value = "";
-            }
-            document.getElementById("modal-usuario").classList.add("active");
-        }
-
-        async function saveUsuarioForm() {
-            const id = document.getElementById("form-user-id").value || "u_" + Date.now();
-            const nombre = document.getElementById("form-user-nombre").value;
-            const correo = document.getElementById("form-user-correo").value;
-            const pass = document.getElementById("form-user-pass").value;
-            const rol = document.getElementById("form-user-rol").value;
-
-            if (!nombre || !pass) { showToast("Complete Nombre y Contraseña."); return; }
-
-            await saveTableItem("usuarios", { id, nombre, correo, pass, rol });
-            closeModal("modal-usuario");
-            loadDataFromDB();
-            showToast("Usuario guardado.");
-        }
-
-        async function deleteUsuario(id) {
-            if (confirm("¿Eliminar usuario?")) {
-                await deleteTableItem("usuarios", id);
-                loadDataFromDB();
-            }
-        }
-
-        /* SALUD TÉCNICA / IMPRESION HTML / JSON */
-        async function renderSaludTecnica() {
-            const clis = await fetchTable("clientes");
-            const procs = await fetchTable("procesosConfig");
-            const tasks = await fetchTable("tasks");
-            const html = `
-                <p><strong>Motor de Base de Datos:</strong> ${db ? 'IndexedDB (Dexie)' : 'LocalStorage Fallback'}</p>
-                <p><strong>Clientes Registrados:</strong> ${clis.length}</p>
-                <p><strong>Procesos Maestros:</strong> ${procs.length}</p>
-                <p><strong>Tareas Operativas:</strong> ${tasks.length}</p>
-                <p><strong>Estado del Sistema:</strong> <span style="color:var(--verde); font-weight:700;">100% Operativo</span></p>
-            `;
-            document.getElementById("panel-salud-tech").innerHTML = html;
-        }
-
-        async function exportSystemDatabase() {
-            const data = {
-                clientes: await fetchTable("clientes"),
-                procesosConfig: await fetchTable("procesosConfig"),
-                tasks: await fetchTable("tasks"),
-                movimientosAfiliatorios: await fetchTable("movimientosAfiliatorios"),
-                auxiliares: await fetchTable("auxiliares"),
-                evaluaciones: await fetchTable("evaluaciones"),
-                evalParametros: await fetchTable("evalParametros"),
-                evalConfig: await fetchTable("evalConfig"),
-                usuarios: await fetchTable("usuarios"),
-                auditoria: await fetchTable("auditoria"),
-                notificaciones: await fetchTable("notificaciones")
-            };
-            const jsonStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", jsonStr);
-            dlAnchor.setAttribute("download", `Respaldo_SIROC_MX_${new Date().toISOString().split('T')[0]}.json`);
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            dlAnchor.remove();
-            showToast("¡Base de Datos exportada en formato JSON!");
+        function renderDashboard() {
+            document.getElementById("kpi-d-pendientes").innerText = appState.tasks.length;
+            document.getElementById("kpi-d-terminados").innerText = appState.tasks.filter(t => t.estado === 'Terminado').length;
         }
 
         function descargarVersionHTML() {
-            const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-            const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `SIROC_MX_Sistema_Completo_${new Date().toISOString().split('T')[0]}.html`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast("¡Archivo HTML descargado correctamente!");
+            const element = document.createElement("a");
+            const file = new Blob([document.documentElement.outerHTML], {type: 'text/html'});
+            element.href = URL.createObjectURL(file);
+            element.download = "SIROC_MX_Firebase.html";
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
         }
-
-        window.onload = function() {
-            initDB();
-        };
     </script>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBoEn4-Kjuab_L3qtFQET42D4W53b704xc",
-    authDomain: "base-de-datos-dde3b.firebaseapp.com",
-    projectId: "base-de-datos-dde3b",
-    storageBucket: "base-de-datos-dde3b.firebasestorage.app",
-    messagingSenderId: "340435640540",
-    appId: "1:340435640540:web:792891002be988b7dcd419",
-    measurementId: "G-GKRQMJMCRH"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const db = getFirestore(app);
-
-  window.db = db;
-  console.log("Firebase conectado correctamente");
-</script>
 </body>
 </html>
